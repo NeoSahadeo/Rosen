@@ -1,6 +1,8 @@
 import { redirect } from '@sveltejs/kit';
-import CookieJsoner from '$lib/cookieParser.js'
 import type { PageServerLoad, Actions } from './$types';
+import { loginURL, signupURL } from '$lib/urls';
+import type { FetchClientMessage } from '$lib/interfaces';
+import CookieJsoner from '$lib/cookieParser.js'
 
 export const load: PageServerLoad = async({ cookies }) =>
 {
@@ -11,70 +13,52 @@ export const load: PageServerLoad = async({ cookies }) =>
 }
 
 export const actions = {
-  default: async({ cookies, request }: {request: any, cookies: any}) => {
+  default: async({ cookies, request }): Promise<FetchClientMessage> =>
+  {
     const formData = await request.formData()
     const username = formData.get('username')
-    const email = formData.get('email')
     const password = formData.get('password')
-    const autologin = formData.get('autologin')
-
-    const formReq = new FormData()
-    formReq.append("username", username)
-    formReq.append("email", email)
-    formReq.append("password", password)
-
-    try {
-      const response = await fetch("http://127.0.0.1:8000/signup/", {
-        method: "POST",
-        body: formReq,
-      });
-
-      if (response.ok)
-      { 
-        if (autologin)
-        {
-          const loginFormReq = new FormData();
-          loginFormReq.append("username_email", username)
-          loginFormReq.append("password", password)
-
-          try 
-          {
-            const loginResponse = await fetch("http://127.0.0.1:8000/login/", {
-              method: "POST",
-              body: loginFormReq,
-            });
-
-            if (loginResponse.ok)
-            { 
-              // let csrfJson = CookieJsoner(response.headers.getSetCookie()[0])
-              let sessionJson = CookieJsoner(loginResponse.headers.getSetCookie()[1])
-              cookies.set('sessionid', sessionJson['sessionid'], {
-                maxAge: parseInt(sessionJson['Max-Age']),
-                path: sessionJson['Path']
-              })
-            }
-          } 
-          catch (e)
-          {
-            console.error(e);
-          }
-        }
-
-        return {
-          success: true,
-          status: response.status,
-          message: "Sign Up Succeeded",
-        }
-      }
-      return {
-        success: false,
-        status: response.status,
-        message: "Sign Up Failed",
-      }
-    } 
-    catch (e)
+    try
     {
-      console.error(e);
+      const response = await fetch(signupURL, { method: 'post', body: formData });
+      if (response.ok)
+      {
+        const loginForm = new FormData();
+        loginForm.append("username_email", username!)
+        loginForm.append("password", password!)
+
+        const loginResponse = await fetch(loginURL, { method: 'post', body: loginForm });
+
+        // Index 1 because the first index is a CSRF token
+        let sessionJson = CookieJsoner(loginResponse.headers.getSetCookie()[1])
+        cookies.set( 'sessionid', sessionJson['sessionid'], { 
+          maxAge: parseInt(sessionJson['Max-Age']), 
+          path: sessionJson['Path'] 
+        })
+        return ({
+          display: true,
+          message: 'Login in successful',
+          status: loginResponse.status,
+          redirect: '/feed/latest/'
+        })
+      }
+      else
+      {
+        let message = await response.json()
+        return ({
+          display: true,
+          message: message[0],
+          status: response.status
+        })
+      }
+    }
+    catch (Error)
+    {
+      return({
+          display: true,
+          message: 'Connection to validation server failed',
+          status: 444,
+      })
     }
   }
 }

@@ -16,14 +16,6 @@ export const actions = {
   default: async ({ cookies, request }): Promise<FetchClientMessage> =>
   {
     const formData = await request.formData()
-    const username_email = formData.get('username_email')
-    const password = formData.get('password')
-
-    if (!(username_email || password)) return ({
-      display: false,
-      message: 'Credential field/s are blank',
-      status: 400
-    })
 
     try
     {

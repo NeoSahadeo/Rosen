@@ -68,7 +68,9 @@ class Signup(APIView):
 
         try:
             User.objects.get(email=email)
-            return Response(status=status.HTTP_409_CONFLICT)
+            return Response({
+                'Email already exists'
+                }, status=status.HTTP_409_CONFLICT)
         except User.DoesNotExist:
             pass
 
@@ -80,7 +82,9 @@ class Signup(APIView):
                 user.save()
                 return Response(status=status.HTTP_201_CREATED)
         except IntegrityError:
-            return Response(status=status.HTTP_409_CONFLICT)
+            return Response({
+                'Username already exists'
+                }, status=status.HTTP_409_CONFLICT)
 
 
 class Login(APIView):
