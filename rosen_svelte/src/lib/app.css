@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --default-border-radius: 0.2rem;
+
+  --primary-background-color: #111111;
+  --secondary-background-color: #0e0e0e;
+
+  --primary-focus-color: #282828;
+
+  --default-background-color-button: #306082;
+  --default-background-color-button-hover: #5b6ee1;
+  --default-padding-button: 0.4rem 1rem;
+  --default-radius-button: 0.2rem;
+
+  --default-color-link: #5b6ee1;
+  --default-color-link-hover: #9eb8ff;
+
+  --default-transition-speed: 0.3s;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  color: white;
+  margin: 0px;
+  box-sizing: border-box;
+  background-color: var(--primary-background-color);
+  padding: 0rem 1rem;
+}
+input {
+  background-color: var(--secondary-background-color);
+  border-radius: var(--default-border-radius);
+  padding: 0.4rem 1rem 0.4rem 0.8rem;
+  width: 100%;
+}
+.link {
+  color: var(--default-color-link);
+  cursor: pointer;
+}
+.link:hover {
+  color: var(--default-color-link-hover);
+  text-decoration: underline;
+}
+button, .button-class {
+  padding: var(--default-padding-button);
+  border-radius: var(--default-border-radius);
+  transition: var(--default-transition-speed);
+  background-color: var(--default-background-color-button);
+}
+button:hover, .button-class:hover {
+  -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+  background-color: var(--default-background-color-button-hover);
+  cursor: pointer;
+}
+
+.searchBarContainer, .searchBarContainerFocus {
+  transition: var(--default-transition-speed);
+}
+.searchBarContainer {
+  background-color: var(--secondary-background-color);
+}
+.searchBarContainerFocus {
+  -webkit-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.75);
+  background-color: var(--primary-focus-color);
+}
+#searchBar:hover, #searchBar:focus {
+  border: 0px;
+  outline: none;
+}
+/* ::placeholder { */
+/*   color: #626262; */
+/* } */
