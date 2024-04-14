@@ -9,7 +9,6 @@ export const load: PageServerLoad = async ({cookies, url}) =>
     '/']
   let sessionid = cookies.get('sessionid')
 
-  console.log('validation session')
   // Check session id against server every refresh
   // Invalidate session if sessionid is none
   if (sessionid)

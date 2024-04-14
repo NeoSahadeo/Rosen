@@ -1,12 +1,13 @@
 <script lang="ts">
-	import {enhance} from '$app/forms';
-	import {goto} from '$app/navigation';
-  import type { PageData, ActionData, PageServerLoad } from './$types';
-
-  export let data: PageServerLoad;
-
-  export let form: ActionData;
-
+	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
+  import type { ActionData, PageServerLoad } from './$types';
+  let loading = false,
+  display = false,
+  message = '', 
+  username = '',
+  password = '',
+  status = 200
 </script>
 <h1
 class="text-white text-4xl mb-8"
@@ -15,27 +16,43 @@ style="font-weight: 300;"
 <form
 class="flex flex-col flex-start w-full sm:max-w-full max-w-xs"
 method="post"
-use:enhance={()=>{
-  return async ({result}) => {
-    if (result.data.redirect)
-    {
-      goto(result.data.redirect)
-    }
+use:enhance={() => {
+  loading = true;
+  return async ({ result }) => 
+  {
+    const data = result.data;
+    setTimeout(()=>{
+      loading = false;
+      message = data.message;
+      display = data.display;
+      message = data.message;
+      status  = data.status;
+      if (data.redirect) goto(data.redirect);
+    }, 3000)
   }
 }}
 >
-  <label for="usernameOrEmail" > Username or Email </label>
-  <input id="usernameOrEmail" name="username_email" type="text" required>
-
-  <label for="password" > Password </label>
-  <input id="password" name="password" type="password" required>
-
-  <input id="submit" type="submit" value="Log In" class="mt-4 w-min button-class ml-auto mr-auto">
-
+  <div class="{loading ? 'loading' : ''}"
+  >
+    <label class="{loading ? 'invisible' : ''}" for="usernameOrEmail" > Username or Email </label>
+    <input class="{loading ? 'invisible' : ''}" id="usernameOrEmail" name="username_email" type="text" bind:value={username} required>
+    <label class="{loading ? 'invisible' : ''}" for="password" > Password </label>
+    <input class="{loading ? 'invisible' : ''}" id="password" name="password" type="password" bind:value={password} required>
+  </div>
+  {#if display}
+  <div >
+  <h1 class="text-red-600">{message}</h1>
+  <p class="text-red-400">Status Code: {status}</p>
+  </div>
+  {/if}
+  <input id="submit" type="submit" value="{loading ? 'Attempting Log In...': 'Log In'}" 
+  class="mt-4 w-min button-class ml-auto mr-auto disabled:cursor-not-allowed" disabled={
+    loading ||
+    username === ''||
+    password === ''
+  }>
 </form>
-<p
-class="mt-2"
->
+<p class="mt-2">
   Don't have account? 
   <a
   class="link"
