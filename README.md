@@ -1,6 +1,6 @@
 ﻿# Rosen
 
-![Rosen Logo](https://lh3.googleusercontent.com/drive-viewer/AKGpihaOnJ4p1KxPCL4FFLjWeehMHY3qF9MFiVAJGnwN1BUfnKVIL2FvMUIaKkJEMvNhuVRkVKAlyjKlfelba1R9EjPiHCzuLgT0IjA=w956-h896-rw-v1)
+<img style="width: 40%;" src="https://lh3.googleusercontent.com/drive-viewer/AKGpihaOnJ4p1KxPCL4FFLjWeehMHY3qF9MFiVAJGnwN1BUfnKVIL2FvMUIaKkJEMvNhuVRkVKAlyjKlfelba1R9EjPiHCzuLgT0IjA=w956-h896-rw-v1" alt="Rosen Logo"/>
 
 **Introduction**
 Rosen is a Reddit clone. It's a project I've undertaken to learn about the ins-and-outs of API development and front-end development.
