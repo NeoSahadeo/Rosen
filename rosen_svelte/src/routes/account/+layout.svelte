@@ -1,3 +1,8 @@
+<script>
+  export let data;
+  import { page } from '$app/stores';
+</script>
+{#if !data.hideNav.includes($page.url.pathname)}
 <nav
 class="absolute left-0"
 >
@@ -9,6 +14,7 @@ width="131px"
 >
 </a>
 </nav>
+{/if}
 <div
 class="mt-16"
 >

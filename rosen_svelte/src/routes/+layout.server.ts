@@ -7,6 +7,10 @@ export const load: PageServerLoad = async ({cookies, url}) =>
     '/account/signup',
     '/account/login',
     '/']
+  let hideNav = [
+    '/account/profile',
+    '/account/profile',
+  ]
   let sessionid = cookies.get('sessionid')
 
   // Check session id against server every refresh
@@ -37,6 +41,7 @@ export const load: PageServerLoad = async ({cookies, url}) =>
     redirect(308, '/');
   }
   return {
-    sessionid
+    sessionid,
+    hideNav
   }
 }

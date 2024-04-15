@@ -3,12 +3,13 @@
 </style>
 <script>
   import "$lib/app.css";
+  import { page } from '$app/stores';
   export let data;
   let searchFocus = false;
 </script>
-
-{#if data.sessionid}
-<nav class="flex flex-row fixed w-full left-0 items-center">
+{#if ((data.sessionid != undefined) && (!data.hideNav.includes($page.url.pathname)))}
+<!--DESKTOP NAV-->
+<nav class="xs:flex flex-row fixed w-full left-0 items-center hidden">
   <div
     class="ml-2 mr-10"
   >
@@ -21,7 +22,7 @@
     </a>
   </div>
   <div
-  class="flex flex-row items-center px-4 py-1 rounded-full flex-1 max-w-lg {searchFocus ? 'searchBarContainerFocus' : 'searchBarContainer'}"
+  class="flex flex-row items-center px-4 py-1 ml-4 mr-8 rounded-full flex-1 {searchFocus ? 'searchBarContainerFocus' : 'searchBarContainer'}"
   >
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#626262" d="m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14"/></svg>
     <input type="text" placeholder="Search Rosen" id="searchBar" class="bg-transparent" on:focus={()=>searchFocus = !searchFocus} on:blur={()=>searchFocus = !searchFocus}>
@@ -50,6 +51,7 @@
     </a>
   </div>
 </nav>
+<!--DESKTOP NAV-->
 {/if}
 <main
 class="h-screen max-w-sm flex flex-col items-center ml-auto mr-auto"

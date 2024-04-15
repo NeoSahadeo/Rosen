@@ -30,12 +30,14 @@ use:enhance={() => {
   return async ({ result }) => 
   {
     const data = result.data;
-    loading = false;
     message = data.message;
     display = data.display;
     status  = data.status;
     setTimeout(()=>{ display = false }, 5000)
-    if (data.redirect) { return goto(data.redirect) };
+    setTimeout(()=>{
+        loading = false;
+        if (data.redirect) { return goto(data.redirect) };
+    }, 3000)
   }
 }}
 >
