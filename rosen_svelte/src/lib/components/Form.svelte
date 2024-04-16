@@ -23,7 +23,7 @@
   <slot name="title"></slot>
 </h1>
 <form
-class="flex flex-col flex-start w-full sm:max-w-full max-w-xs"
+class="flex flex-col flex-start max-w-sm w-full"
 method="post"
 use:enhance={() => {
   loading = true;
@@ -33,16 +33,18 @@ use:enhance={() => {
     message = data.message;
     display = data.display;
     status  = data.status;
-    setTimeout(()=>{ display = false }, 5000)
     setTimeout(()=>{
-        loading = false;
-        if (data.redirect) { return goto(data.redirect) };
+        if (data.redirect) { 
+          return goto(data.redirect) 
+        }else{
+          loading = false;
+          display = false;
+        };
     }, 3000)
   }
 }}
 >
-  <slot class="{loading ? 'loading' : ''}" {loading}>
+  <slot class="{loading ? 'loading' : ''}" {loading} {status}>
   </slot>
-  <slot name="submit" {loading}></slot>
 </form>
 <slot name="extra"></slot>

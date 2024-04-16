@@ -8,6 +8,7 @@ export const load: PageServerLoad = async ({cookies, url}) =>
     '/account/login',
     '/']
   let hideNav = [
+    '/',
     '/account/profile',
     '/account/profile',
   ]

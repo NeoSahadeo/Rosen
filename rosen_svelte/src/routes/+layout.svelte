@@ -1,15 +1,15 @@
-<style>
-
-</style>
 <script>
   import "$lib/app.css";
   import { page } from '$app/stores';
   export let data;
   let searchFocus = false;
+  let localScrollY;
 </script>
+<svelte:window bind:scrollY={localScrollY} />
+<div>
 {#if ((data.sessionid != undefined) && (!data.hideNav.includes($page.url.pathname)))}
 <!--DESKTOP NAV-->
-<nav class="xs:flex flex-row fixed w-full left-0 items-center hidden">
+<nav class="xs:flex flex-row w-full left-0 items-center hidden fixed transition {localScrollY > 0 ? 'drop-shadow-md': ''}" style="background-color: var(--primary-background-color)">
   <div
     class="ml-2 mr-10"
   >
@@ -51,10 +51,12 @@
     </a>
   </div>
 </nav>
+<div class="pb-28"></div>
 <!--DESKTOP NAV-->
 {/if}
 <main
-class="h-screen max-w-sm flex flex-col items-center ml-auto mr-auto"
+class="flex flex-col items-center ml-auto mr-auto h-screen"
 >
-<slot/>
+<slot class="overflow-y-scroll" />
 </main>
+</div>

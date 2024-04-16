@@ -13,7 +13,6 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.db import IntegrityError
-import django.middleware.csrf
 
 engine = import_module(settings.SESSION_ENGINE)
 
@@ -42,6 +41,11 @@ class Latest(APIView):
 
 
 class ValidateSession(APIView):
+    """Session validation endpoint
+
+    Return 202 if session still exists in db
+    Return 401 if session does not exist in db
+    """
     def post(self, request):
         sessionid = request.data.get('sessionid')
         request.user = validateSession(sessionid)
@@ -49,12 +53,6 @@ class ValidateSession(APIView):
             return Response(status=status.HTTP_202_ACCEPTED)
 
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-
-class User_CSRF(APIView):
-    def get(self, request):
-        csrf = django.middleware.csrf.get_token(request)
-        return Response({'csrf': csrf}, status=status.HTTP_202_ACCEPTED)
 
 
 class Signup(APIView):
@@ -92,18 +90,23 @@ class Login(APIView):
         username_email = request.data.get('username_email')
         password = request.data.get('password')
 
+        # Authenticate with username
         try:
             user = User.objects.get(email=username_email)
             user = authenticate(username=user.username, password=password)
         except User.DoesNotExist:
             user = None
+
+        # Authenticate with email
         if user is None:
             user = authenticate(username=username_email, password=password)
 
         if user is not None:
             try:
                 login(request, user)
-                return Response()
+                return Response(
+                        status=status.HTTP_202_ACCEPTED
+                        )
             except AttributeError:
                 pass
 

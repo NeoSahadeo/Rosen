@@ -1,6 +1,10 @@
-export const load = async({ cookies }) =>
+export const load = async({ cookies, fetch, setHeaders }) =>
 {
-  if(cookies.get('sessionid'))
+  const response = await fetch('https://dummyjson.com/products?limit=2')
+  if (response.ok)
   {
+    let posts = await response.json();
+    posts = posts.products
+    return {posts}
   }
 }
