@@ -1,6 +1,7 @@
 import { redirect } from "@sveltejs/kit";
 import type {PageServerLoad} from "./account/login/$types";
 
+// Main Entry Point for all pages.
 export const load: PageServerLoad = async ({cookies, url}) =>
 {
   let allowedAnonymousPath = [
@@ -15,7 +16,7 @@ export const load: PageServerLoad = async ({cookies, url}) =>
   let sessionid = cookies.get('sessionid')
 
   // Check session id against server every refresh
-  // Invalidate session if sessionid is none
+  // Invalidate session if sessionid is none [status=401.HTTP_401_UNAUTHORIZED]
   if (sessionid)
   {
     const formData = new FormData()
@@ -29,18 +30,20 @@ export const load: PageServerLoad = async ({cookies, url}) =>
     )
     if (!response.ok)
     {
-      cookies.delete('sessionid', {
-        path: '/'
-      })
+      cookies.delete('sessionid', { path: '/' })
       sessionid = null
     }
   }
+
   // Redirect if user is not logged in
   if (!sessionid &&
      !allowedAnonymousPath.includes(url.pathname))
   {
     redirect(308, '/');
   }
+
+  // Always return Session ID and whether or
+  // not the nav is hidden on the page.
   return {
     sessionid,
     hideNav

@@ -22,9 +22,7 @@
 <h1 class="text-white text-4xl mb-8" style="font-weight: 300;">
   <slot name="title"></slot>
 </h1>
-<form
-class="flex flex-col flex-start max-w-sm w-full"
-method="post"
+<form class="flex flex-col flex-start max-w-sm w-full" method="post"
 use:enhance={() => {
   loading = true;
   return async ({ result }) => 

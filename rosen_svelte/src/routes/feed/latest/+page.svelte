@@ -1,9 +1,7 @@
 <script>
   export let data;
+  import Post from '$lib/components/Post.svelte';
 </script>
 {#each data.posts as post }
-<div>
-<img src="{post.images[0]}">
-{post.title}
-</div>
+<Post {post}></Post>
 {/each}
