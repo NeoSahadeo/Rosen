@@ -17,6 +17,13 @@ from django.db import IntegrityError
 engine = import_module(settings.SESSION_ENGINE)
 
 
+class CreateSession:
+    def get(self, request):
+        print(request.session)
+        return Response()
+
+
+
 def validateSession(sessionid):
     """
     Take in session and checks the SessionStore
