@@ -5,19 +5,46 @@ const messagesFunc = () => {
     set([])
 
     const send = (message, status, preserve = 3000) => {
-        update(value => [...value, {message, status}])
-        setTimeout(()=>{
-            update(value => {
-                value.pop();
-                return value
-            })
-        }, preserve)
+        // Preserve = 0 is has no expiry
+        update(value => {
+            const returnObject = {
+                        message,
+                        status,
+                        id: Math.random()
+            }
+            // Avoids spreading empty array
+            return (value.length > 0) ? [...value, returnObject] : [returnObject]
+        })
+        if (preserve !== 0)
+        {
+            setTimeout(()=>{
+                update(value => {
+                    value.pop();
+                    return value
+                })
+            }, preserve)
+        }
+    }
+
+    const remove = (id) => {
+        update(value => {
+            let globalIndex;
+            value.forEach((element, index)=> {
+                if(element.id === id)
+                {
+                    globalIndex = index
+                }
+            });
+            value.splice(globalIndex, 1)
+            return value
+        })
     }
 
     return {
         subscribe,
         set,
         send,
+        remove,
         reset: ()=>set(0)
     }
 }

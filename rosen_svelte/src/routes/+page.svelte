@@ -3,7 +3,7 @@
 </script>
 <style>
   a { margin: 0.4rem; }
-</style>
+  </style>
 <div class="my-auto" >
   <img src="ThePenroseProject1080.png" alt="The Rosen Project" class="mx-auto w-64" >
   <h1 class="sm:mt-20 text-white sm:text-5xl text-4xl mt-12" style="font-weight: 300; text-wrap: nowrap;">The Rosen Project</h1>

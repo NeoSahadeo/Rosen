@@ -1,4 +1,3 @@
-
 const Login = async (URL: string, headers, cookies): Promise<{login: boolean, status: number}> => {
   try
   {
@@ -14,7 +13,7 @@ const Login = async (URL: string, headers, cookies): Promise<{login: boolean, st
     }
     return {login: false, status: response.status}
   }
-  catch (Error)
+  catch (error)
   {
     return {login: false, status: 444}
   }

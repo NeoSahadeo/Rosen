@@ -1,7 +1,9 @@
+import { loginURL, signupURL } from '$lib/urls';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { loginURL, signupURL } from '$lib/urls';
-import type { FetchClientMessage } from '$lib/interfaces';
+import type { Message } from '$lib/interfaces';
+import { Login } from '$lib/api';
+import messages from '$lib/messages.json';
 
 export const load: PageServerLoad = async({ cookies }) =>
 {
@@ -12,8 +14,7 @@ export const load: PageServerLoad = async({ cookies }) =>
 }
 
 export const actions = {
-  default: async({ cookies, request }): Promise<FetchClientMessage> =>
-  {
+  default: async({ cookies, request }): Promise<Message> => {
     const formData = await request.formData()
     const username = formData.get('username')
     const password = formData.get('password')
@@ -26,36 +27,26 @@ export const actions = {
         loginForm.append("username_email", username!)
         loginForm.append("password", password!)
 
-        const loginResponse = await fetch(loginURL, { method: 'post', body: loginForm });
+        const loginResponse = await Login(loginURL, { method: 'post', body: loginForm }, cookies);
+        return {
+          message: messages.sign_up_successfull,
+          status: response.status,
+        }
 
-        // Index 1 because the first index is a CSRF token
-        let sessionJson = CookieJsoner(loginResponse.headers.getSetCookie()[1])
-        cookies.set( 'sessionid', sessionJson['sessionid'], { 
-          maxAge: parseInt(sessionJson['Max-Age']), 
-          path: sessionJson['Path'] 
-        })
-        return ({
-          display: true,
-          message: 'Login in successful',
-          status: loginResponse.status,
-          redirect: '/feed/latest/'
-        })
       }
       else
       {
         let message = await response.json()
         return ({
-          display: true,
           message: message[0],
           status: response.status
         })
       }
     }
-    catch (Error)
+    catch (error)
     {
       return({
-          display: true,
-          message: 'Connection to validation server failed',
+          message: messages.server_con_failed,
           status: 444,
       })
     }
