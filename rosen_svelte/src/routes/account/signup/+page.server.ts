@@ -2,7 +2,6 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { loginURL, signupURL } from '$lib/urls';
 import type { FetchClientMessage } from '$lib/interfaces';
-import CookieJsoner from '$lib/cookieParser.js'
 
 export const load: PageServerLoad = async({ cookies }) =>
 {

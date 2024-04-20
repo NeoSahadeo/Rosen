@@ -6,11 +6,11 @@
   import { page } from '$app/stores';
   export let data;
 </script>
-<Message></Message>
+<Message />
 <Main>
   {#if ((data.sessionid != undefined) && (!data.hideNav.includes($page.url.pathname)))}
   <!--DESKTOP NAV-->
-  <DesktopNavBar></DesktopNavBar>
+  <DesktopNavBar />
   <!--DESKTOP NAV-->
   {/if}
   <slot></slot>

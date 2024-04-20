@@ -1,5 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import type {PageServerLoad} from "./account/login/$types";
+import { messages } from "$lib/stores";
 
 // Main Entry Point for all pages.
 export const load: PageServerLoad = async ({cookies, url}) =>
@@ -42,10 +43,13 @@ export const load: PageServerLoad = async ({cookies, url}) =>
     redirect(308, '/');
   }
 
+  // Clean messages
+  messages.reset();
+
   // Always return Session ID and whether or
   // not the nav is hidden on the page.
   return {
     sessionid,
-    hideNav
+    hideNav,
   }
 }

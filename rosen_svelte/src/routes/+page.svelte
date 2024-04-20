@@ -2,9 +2,7 @@
   export let data;
 </script>
 <style>
-  a {
-    margin: 0.4rem;
-  }
+  a { margin: 0.4rem; }
 </style>
 <div class="my-auto" >
   <img src="ThePenroseProject1080.png" alt="The Rosen Project" class="mx-auto w-64" >

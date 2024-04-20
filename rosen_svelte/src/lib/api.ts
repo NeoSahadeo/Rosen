@@ -1,3 +1,4 @@
+
 const Login = async (URL: string, headers, cookies): Promise<{login: boolean, status: number}> => {
   try
   {
@@ -8,7 +9,7 @@ const Login = async (URL: string, headers, cookies): Promise<{login: boolean, st
       let responseJson = CookieJsoner(response.headers.getSetCookie()[1])
       // Set path = Path because sveltekit path is case sens.
       responseJson['path'] = responseJson['Path']
-      // cookies.set('sessionid', responseJson['sessionid'], responseJson)      
+      cookies.set('sessionid', responseJson['sessionid'], responseJson)      
       return {login: true, status: response.status}
     }
     return {login: false, status: response.status}

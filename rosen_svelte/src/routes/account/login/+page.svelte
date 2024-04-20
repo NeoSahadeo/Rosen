@@ -3,17 +3,16 @@
   let username = '',
   password = ''
 </script>
-<Form let:loading let:status>
+<Form>
   <span slot="title">
   Log In
   </span>
-    <label class="{loading ? 'invisible' : ''}" for="usernameOrEmail" > Username or Email </label>
-    <input class="{loading ? 'invisible' : ''}" id="usernameOrEmail" name="username_email" type="text" bind:value={username} required>
-    <label class="{loading ? 'invisible' : ''}" for="password" > Password </label>
-    <input class="{loading ? 'invisible' : ''}" id="password" name="password" type="password" bind:value={password} required>
-    <input id="submit" type="submit" value="{loading ? `Attempting Log In...`: 'Log In'}" 
+    <label for="usernameOrEmail" > Username or Email </label>
+    <input id="usernameOrEmail" name="username_email" type="text" bind:value={username} required>
+    <label for="password" > Password </label>
+    <input id="password" name="password" type="password" bind:value={password} required>
+    <input id="submit" type="submit" value="Log In" 
     class="mt-4 w-min button-class ml-auto mr-auto disabled:cursor-not-allowed" disabled={
-      loading ||
       username === ''||
       password === '' 
     }>

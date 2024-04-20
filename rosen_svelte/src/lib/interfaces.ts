@@ -1,5 +1,5 @@
-export interface FetchClientMessage
+export interface Message
 {
-  status?: number,
-  message?: string,
+  message: string,
+  status: number,
 }

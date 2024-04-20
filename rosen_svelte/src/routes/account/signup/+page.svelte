@@ -15,7 +15,7 @@
     );
   }
 </script>
-<Form let:loading>
+<Form>
 
 <span slot="title">Sign Up</span>
 <label for="email" > Email </label>
@@ -49,15 +49,14 @@
 
 <input id="confirm_password" name="confirm password" type="password" bind:value={password2} required>
 
-<input id="submit" type="submit" value="{loading ? `Attempting Account Creation...`: 'Create Account'}"
+<input id="submit" type="submit" value="Create Account"
 class="mt-4 w-min button-class ml-auto mr-auto disabled:cursor-not-allowed" disabled={
     password1 !== password2 || 
     password1 === '' ||
     password2 === '' ||
     email === '' ||
     username === '' ||
-    !usernameValidator() ||
-    loading
+    !usernameValidator()
   }
 >
 <span slot="extra">
