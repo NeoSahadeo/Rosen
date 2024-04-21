@@ -13,6 +13,7 @@ use:enhance={() => {
     // @ts-ignore
     const { message, status } = result.data;
     messages.send(message, status)
+    messages.send('Loading Content', 0)
     invalidateAll()
   }
 }}>

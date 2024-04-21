@@ -6,11 +6,12 @@ const messagesFunc = () => {
 
     const send = (message, status, preserve = 3000) => {
         // Preserve = 0 is has no expiry
+        const id = Math.random()
         update(value => {
             const returnObject = {
                         message,
                         status,
-                        id: Math.random()
+                        id
             }
             // Avoids spreading empty array
             return (value.length > 0) ? [...value, returnObject] : [returnObject]
@@ -18,10 +19,7 @@ const messagesFunc = () => {
         if (preserve !== 0)
         {
             setTimeout(()=>{
-                update(value => {
-                    value.pop();
-                    return value
-                })
+                remove(id)
             }, preserve)
         }
     }

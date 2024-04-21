@@ -2,7 +2,7 @@
     import { messages } from "$lib/stores";
     import { fade } from "svelte/transition";
 </script>
-<section class="absolute pb-4 px-4 max-w-sm w-full z-50 bottom-0 sm:left-full sm:-translate-x-full left-1/2 -translate-x-1/2">
+<section class="fixed pb-4 px-4 max-w-sm w-full z-50 bottom-0 sm:left-full sm:-translate-x-full left-1/2 -translate-x-1/2">
     {#each $messages as message}
         <div
         id="{message.id}"

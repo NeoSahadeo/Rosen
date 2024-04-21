@@ -3,7 +3,7 @@
   let localScrollY, navHeight;
 </script>
 <svelte:window bind:scrollY={localScrollY} />
-<nav bind:clientHeight={navHeight} class="xs:flex flex-row w-full left-0 items-center hidden transition fixed {localScrollY > 0 ? 'drop-shadow-md': ''}" style="background-color: var(--primary-background-color)">
+<nav bind:clientHeight={navHeight} class="z-40 xs:flex flex-row w-full left-0 items-center hidden transition fixed {localScrollY > 0 ? 'drop-shadow-md': ''}" style="background-color: var(--primary-background-color)">
     <div class="ml-2 mr-10">
         <a href='/'>
             <img src="/ThePenroseProject720.png" alt="The Rosen Project Home Link" width="110px" >
