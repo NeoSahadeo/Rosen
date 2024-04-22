@@ -1,6 +1,7 @@
 <script>
   import "$lib/app.css";
   import DesktopNavBar from "$lib/components/DesktopNavBar.svelte";
+  import MobileNavBar from "$lib/components/MobileNavBar.svelte";
   import Main from "$lib/components/Main.svelte";
   import Message from "$lib/components/Message.svelte";
   import { page } from '$app/stores';
@@ -18,6 +19,9 @@
   <!--DESKTOP NAV-->
   <DesktopNavBar />
   <!--DESKTOP NAV-->
+  <!--MOBILE NAV-->
+  <MobileNavBar />
+  <!--MOBILE NAV-->
   {/if}
   <slot></slot>
 </Main>

@@ -12,7 +12,7 @@
     <label for="password" > Password </label>
     <input id="password" name="password" type="password" bind:value={password} required>
     <input id="submit" type="submit" value="Log In" 
-    class="mt-4 w-min button-class ml-auto mr-auto disabled:cursor-not-allowed" disabled={
+    class="mt-4 w-min button-primary ml-auto mr-auto disabled:cursor-not-allowed" disabled={
       username === ''||
       password === '' 
     }>

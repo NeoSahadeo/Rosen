@@ -46,18 +46,26 @@ input {
   color: var(--default-color-link-hover);
   text-decoration: underline;
 }
-button, .button-class {
+.button-primary {
   padding: var(--default-padding-button);
   border-radius: var(--default-border-radius);
   transition: var(--default-transition-speed);
   background-color: var(--default-background-color-button);
 }
-button:hover, .button-class:hover {
+.button-primary:hover {
   -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
   -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
   box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
   background-color: var(--default-background-color-button-hover);
   cursor: pointer;
+}
+.button-normal {
+  background-color: transparent;
+  padding: 0.4rem 0.4rem;
+}
+.button-normal:hover {
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .searchBarContainer, .searchBarContainerFocus {
@@ -80,6 +88,10 @@ button:hover, .button-class:hover {
 }
 .subRosenProfile {
   border-color: #3a3a3a;
+}
+.iconSize {
+    max-width: var(--iconSize);
+    max-height: var(--iconSize);
 }
 /* ::placeholder { */
 /*   color: #626262; */

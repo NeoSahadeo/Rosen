@@ -1,3 +1,5 @@
+import icons from "./icons";
+
 const Login = async (URL: string, headers, cookies): Promise<{login: boolean, status: number}> => {
   try
   {
@@ -33,7 +35,13 @@ const CookieJsoner = (cookie: String): JSON =>
   return JSON.parse(`{${jsonArray.toString()}}`)
 }
 
+const Icon = (name: string) => {
+  return (icons.find(element => element.name === name)?.svg)
+
+}
+
 export { 
   CookieJsoner,
   Login,
+  Icon,
 }

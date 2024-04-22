@@ -12,7 +12,6 @@ export const load: PageServerLoad = async ({cookies, url}) =>
   let hideNav = [
     '/',
     '/account/profile',
-    '/account/profile',
   ]
   let sessionid = cookies.get('sessionid')
 

@@ -10,13 +10,13 @@
   <nav class="w-full flex items-center flex-col mt-4">
     <div class="flex flex-row text-white items-center" >
       {#if !data.sessionid}
-      <a href="account/signup" class="button-class">Sign Up</a>
+      <a href="account/signup" class="button-primary">Sign Up</a>
         <span class="mx-2" >
         or
         </span>
-      <a href="account/login" class="button-class">Log In</a>
+      <a href="account/login" class="button-primary">Log In</a>
       {:else}
-      <a href="feed/latest" class="button-class">Latest</a>
+      <a href="feed/latest" class="button-primary">Latest</a>
       {/if}
     </div>
   </nav>
