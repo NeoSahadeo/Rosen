@@ -4,8 +4,7 @@ const Login = async (URL: string, headers, cookies): Promise<{login: boolean, st
     const response = await fetch(URL, headers);
     if (response.ok)
     {
-      // Index 1 because the first index is a CSRF token
-      let responseJson = CookieJsoner(response.headers.getSetCookie()[1])
+      let responseJson = CookieJsoner(response.headers.getSetCookie()[0])
       // Set path = Path because sveltekit path is case sens.
       responseJson['path'] = responseJson['Path']
       cookies.set('sessionid', responseJson['sessionid'], responseJson)      

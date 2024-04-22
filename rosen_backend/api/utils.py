@@ -1,5 +1,9 @@
 import bcrypt
-from api.models import User
+from api.models import User, UserSession
+from django.contrib.sessions.backends.db import SessionStore
+from django.contrib.sessions.models import Session
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.backends.base import CreateError, SessionBase
 
 
 def hash_password(password):
@@ -21,4 +25,28 @@ def authenticate(username, password):
                 'username': username
                 }
     except User.DoesNotExist:
+        return None
+
+
+def createSession(user, request):
+    try:
+        usersession = UserSession.objects.get(user_id=user.id)
+        session_id = usersession.session_id
+        request.session.__init__(session_id)
+    except UserSession.DoesNotExist:
+        request.session.create()
+        UserSession.objects.create(user_id=user.id, session_id=request.session.session_key)
+
+
+def validateSession(sessionid):
+    """
+    Take in session and checks the SessionStore
+
+    Returns a logged in User or AnonymousUser
+    """
+    try:
+        session = UserSession.objects.get(session_id=sessionid)
+        user = User.objects.get(id=session.user_id)
+        return user
+    except UserSession.DoesNotExist:
         return None

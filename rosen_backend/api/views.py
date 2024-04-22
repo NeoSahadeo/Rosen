@@ -1,41 +1,18 @@
-from importlib import import_module
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import AnonymousUser
-from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.db import IntegrityError
 from api.models import User
 from api.utils import (
         hash_password,
-        authenticate)
+        authenticate,
+        createSession,
+        validateSession)
 from django.contrib.auth import (
         login,
-        logout,
-        SESSION_KEY,
-        BACKEND_SESSION_KEY,
-        load_backend)
-
-engine = import_module(settings.SESSION_ENGINE)
-
-
-def validateSession(sessionid):
-    """
-    Take in session and checks the SessionStore
-
-    Returns a logged in User or AnonymousUser
-    """
-    try:
-        session = engine.SessionStore(sessionid)
-        user_id = session[SESSION_KEY]
-        backend_path = session[BACKEND_SESSION_KEY]
-        backend = load_backend(backend_path)
-        user = backend.get_user(user_id)
-        return user
-    except KeyError:
-        user = AnonymousUser()
-        return user
+        logout)
 
 
 class Latest(APIView):
@@ -46,13 +23,13 @@ class Latest(APIView):
 class ValidateSession(APIView):
     """Session validation endpoint
 
-    Return 202 if session still exists in db
+    Return 202 if still exists in db
     Return 401 if session does not exist in db
     """
     def post(self, request):
         sessionid = request.data.get('sessionid')
-        request.user = validateSession(sessionid)
-        if not request.user.is_anonymous:
+        user = validateSession(sessionid)
+        if user is not None:
             return Response(status=status.HTTP_202_ACCEPTED)
 
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -107,9 +84,9 @@ class Login(APIView):
         # Will return a session
         if user is not None and user.get('authenticated'):
             user = User.objects.get(username=user.get('username'))
-            login(request, user)
-            response = Response()
-            response.status_code = status.HTTP_202_ACCEPTED
+            createSession(user, request)
+            response = Response(status=status.HTTP_202_ACCEPTED)
+            request.session.set_expiry(0)
             return response
 
         user = AnonymousUser()

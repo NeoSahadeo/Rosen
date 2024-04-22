@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.contrib.sessions.models import Session
 from django.core.validators import (
         validate_email,
         RegexValidator)
@@ -22,6 +23,17 @@ class User(models.Model):
                                 blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
+
+
+class UserSession(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             db_constraint=False)
+    session = models.ForeignKey(Session,
+                                null=True,
+                                on_delete=models.SET_NULL,
+                                db_constraint=False)
 
 
 class Post(models.Model):
