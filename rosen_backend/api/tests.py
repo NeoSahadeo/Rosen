@@ -1,40 +1,49 @@
 from django.test import TestCase
 from django.db.utils import IntegrityError
-from api.models import User, Post
+from django.core.files.uploadedfile import SimpleUploadedFile
+from rest_framework.test import APIRequestFactory, APIClient
+from api.models import (User, Group)
+from api.utils import (
+        hash_password,
+        authenticate,
+        createSession,
+        validateSession)
+from api.views import (
+        Signup,
+        Login,
+        ValidateSession,
+        Logout)
+
+# Test Values
+USERNAME = 'NeoSahadeo'
+EMAIL = 'neosahadeo@protonmail.com'
+PASSWORD = 'Password@1234'
+GROUP_NAME = 'Groupy'
+GROUP_DESCRIPTION = 'A very groupy group.'
+IMAGE = SimpleUploadedFile('gooby_wooby.png',
+                           content=b'file_content',
+                           content_type='image/png')
+
+factory = APIRequestFactory()
+client = APIClient()
 
 
-# class UserTest(TestCase):
-#     def test_user_creation(self):
-#         user = User.objects.create(
-#                 username="Neo",
-#                 email="neo@gmail.com")
-#         self.assertIsNotNone(user)
+class GroupTest(TestCase):
+    def test_model_creation(self):
+        Group.objects.create(
+                name=GROUP_NAME,
+                description=GROUP_DESCRIPTION,
+                image=IMAGE)
+        group = Group.objects.get(name=GROUP_NAME)
+        self.assertIsNotNone(group)
 
-#     def test_invalid_username_creation(self):
-#         user = User.objects.create(
-#                 username="Neo Neo",
-#                 email="neo@gmail.com")
-#         try:
-#             user = User.objects.get(username='Neo Neo')
-#         except User.DoesNotExist:
-#             self.assertIsNone(user)
 
-#     def test_invalid_email_creation(self):
-#         user = User.objects.create(
-#                 username="Neo",
-#                 email="Neo")
-#         try:
-#             user = User.objects.get(email='Neo')
-#         except User.DoesNotExist:
-#             self.assertIsNone(user)
-
-#     def test_single_username(self):
-#         try:
-#             User.objects.create(
-#                     username="Neo",
-#                     email="Neo@gmail.com")
-#             User.objects.create(
-#                     username="Neo",
-#                     email="Neo@gmail.com")
-#         except IntegrityError:
-#             pass
+class UserTest(TestCase):
+    def test_creation(self):
+        client.post('/signup/', {
+            'username': USERNAME,
+            'email': EMAIL,
+            'password': PASSWORD,
+            'image': IMAGE
+            })
+        User.objects.get(username=USERNAME)
