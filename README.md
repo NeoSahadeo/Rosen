@@ -1,4 +1,4 @@
-﻿# Rosen
+# Rosen
 
 **Introduction**
 
@@ -31,6 +31,7 @@ During the Harvard CS50W course I used Django's Web Framework for the entirety o
 
 Sveltekit is the recommended way to build Svelte components (I think I read it somewhere). It was fun either way.
 
+
 ## Possible Improvements
 
 ## See More
@@ -38,3 +39,13 @@ Sveltekit is the recommended way to build Svelte components (I think I read it s
 Links:
 - [Django Rest Framework](https://www.django-rest-framework.org/)
 - [Svelte & SvelteKit](https://svelte.dev/)
+
+
+# API
+
+Yeah I put the API documentation in the README, fight me ;)
+
+### Django System
+
+### Sveltekit System
+
