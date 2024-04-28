@@ -19,8 +19,10 @@ class User(models.Model):
                               blank=False)
     password = models.CharField(max_length=255,
                                 blank=False)
-    image = models.ImageField(upload_to='static/',
-                                blank=True)
+    image = models.ImageField(upload_to='images/',
+                              blank=True,
+                              null=True,
+                              default=None)
     creation_date = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
 

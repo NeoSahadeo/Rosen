@@ -1,4 +1,6 @@
 import icons from "./icons";
+import { fetchProfileURL, basePath } from "./urls";
+import type { Message } from '$lib/interfaces';
 
 const Login = async (URL: string, headers, cookies): Promise<{login: boolean, status: number}> => {
   try
@@ -40,8 +42,29 @@ const Icon = (name: string) => {
 
 }
 
+const LoadProfile = async (sessionid: string): Promise<Message> => {
+  const response = await fetch(fetchProfileURL, { method: 'post', body: sessionid})
+  if (response.ok)
+  {
+    const body = await response.json()
+    const image_url = `${basePath}${body.image}`
+    return {
+      message: 'Loaded Profile',
+      status: response.status,
+      image: image_url,
+      username: body.username,
+      email: body.email,
+    }
+  }
+  return {
+    message: 'Trouble loading profile',
+    status: response.status
+  }
+}
+
 export { 
   CookieJsoner,
   Login,
   Icon,
+  LoadProfile,
 }

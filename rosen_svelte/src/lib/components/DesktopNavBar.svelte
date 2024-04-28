@@ -2,7 +2,9 @@
     import { Icon } from "$lib/api";
     let searchFocus = false;
     let localScrollY, navHeight;
-    let iconSize = '2.5rem';
+    const iconSize = '2.5rem';
+    const profileSize = '3rem';
+    export let username, image;
 </script>
 <style>
 </style>
@@ -19,7 +21,7 @@
         </div>
         <input type="text" placeholder="Search Rosen" id="searchBar" class="bg-transparent" on:focus={()=>searchFocus = !searchFocus} on:blur={()=>searchFocus = !searchFocus}>
     </div>
-    <div class="flex flex-row pr-6 ml-auto" style="--iconSize:{iconSize}">
+    <div class="flex flex-row pr-6 ml-auto items-center" style="--iconSize:{iconSize}">
         <button class="bg-transparent rounded-full p-2 mx-2 iconSize">
             {@html Icon('add')}
         </button>
@@ -29,7 +31,9 @@
         <button class="bg-transparent rounded-full p-2 mx-2 iconSize" >
             {@html Icon('notifications')}
         </button>
-        <a class="hover:cursor-pointer" href="/account/profile/" > :) </a>
+        <a class="hover:cursor-pointer" href="/account/profile/" >
+            <img src={image} class="object-cover rounded-full" style="width: {profileSize}; height: {profileSize};" alt="{username} profile photo">
+        </a>
     </div>
 </nav>
 <div style="padding-bottom:{navHeight}px" class="pt-4 xs:block hidden"></div>

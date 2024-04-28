@@ -1,9 +1,10 @@
+import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import AnonymousUser
-from django.contrib.sessions.models import Session
 from django.db import IntegrityError
+from django.http import HttpResponse
 from api.models import (
         User,
         Group)
@@ -11,10 +12,8 @@ from api.utils import (
         hash_password,
         authenticate,
         createSession,
-        validateSession)
-from django.contrib.auth import (
-        login,
-        logout)
+        validateSession,
+        verfiySession)
 
 
 class Latest(APIView):
@@ -30,11 +29,7 @@ class ValidateSession(APIView):
     """
     def post(self, request):
         sessionid = request.data.get('sessionid')
-        user = validateSession(sessionid)
-        if user is not None:
-            return Response(status=status.HTTP_202_ACCEPTED)
-
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return verfiySession(sessionid)['response']
 
 
 class Signup(APIView):
@@ -44,7 +39,7 @@ class Signup(APIView):
         username = request.data.get('username')
         email = request.data.get('email')
         password = request.data.get('password')
-        image = request.FILES['image']
+        image = request.data.get('image')
 
         hashed_password = hash_password(password)
 
@@ -89,25 +84,15 @@ class Login(APIView):
         if user is not None and user.get('authenticated'):
             user = User.objects.get(username=user.get('username'))
             createSession(user, request)
-            response = Response(status=status.HTTP_202_ACCEPTED)
+            response = Response({
+                'session_id': request.session.session_key,
+                'session_expiry': request.session.set_expiry(0),
+                }, status=status.HTTP_202_ACCEPTED)
             request.session.set_expiry(0)
             return response
 
         user = AnonymousUser()
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-
-class Logout(APIView):
-    def get(self, request):
-        sessionid = request.data.get('sessionid')
-        request.user = validateSession(sessionid)
-        if request.user.is_authenticated:
-            try:
-                Session.objects.get(session_key=sessionid).delete()
-                logout(request)
-            except Session.DoesNotExist:
-                pass
-        return Response()
 
 
 class CreateGroup(APIView):
@@ -128,3 +113,46 @@ class CreateGroup(APIView):
             except IntegrityError:
                 return Response(status=status.HTTP_409_CONFLICT)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class UpdateProfile(APIView):
+    def post(self, request):
+        # TODO
+        # clean data
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        image = request.FILES.get('image')
+        sessionid = request.data.get('sessionid')
+        user = validateSession(sessionid)
+        if user is not None:
+            user.username = username or user.username
+            user.email = email or user.email
+            user.password = password or user.password
+            # TODO
+            # Delete previous image
+            user.image = image or user.image
+            user.save()
+            return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class FetchProfileImage(APIView):
+    # NEED TO ABSTRACT
+    def post(self, request):
+        sessionid = str(request.body, 'utf-8')
+        response = verfiySession(sessionid)['user']
+        try:
+            image_url = response.image.url
+        except ValueError:
+            image_url = None
+        return Response({
+            'image': image_url,
+            'username': response.username,
+            'email': response.email
+            })
+
+
+class Search(APIView):
+    def get(self, request):
+        pass

@@ -17,7 +17,7 @@
 <Main>
   {#if ((data.sessionid != undefined) && (!data.hideNav.includes($page.url.pathname)))}
   <!--DESKTOP NAV-->
-  <DesktopNavBar />
+  <DesktopNavBar username={data.username} image={data.image}/>
   <!--DESKTOP NAV-->
   <!--MOBILE NAV-->
   <MobileNavBar />

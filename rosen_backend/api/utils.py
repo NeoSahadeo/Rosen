@@ -1,5 +1,7 @@
 import bcrypt
 from api.models import User, UserSession
+from rest_framework.response import Response
+from rest_framework import status
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import AnonymousUser
@@ -29,6 +31,10 @@ def authenticate(username, password):
 
 
 def createSession(user, request):
+    """
+    If the user exists creates a session id
+    attached to request.session
+    """
     try:
         usersession = UserSession.objects.get(user_id=user.id)
         session_id = usersession.session_id
@@ -42,7 +48,7 @@ def validateSession(sessionid):
     """
     Take in session and checks the SessionStore
 
-    Returns a logged in User or AnonymousUser
+    Returns a logged in User or None
     """
     try:
         session = UserSession.objects.get(session_id=sessionid)
@@ -50,3 +56,22 @@ def validateSession(sessionid):
         return user
     except UserSession.DoesNotExist:
         return None
+
+
+def verfiySession(sessionid):
+    """
+        Wrapper for return responses
+        for validtesession.
+    """
+    user = validateSession(sessionid)
+    if user is not None:
+        return {
+                'user': user,
+                'response': Response(status=status.HTTP_202_ACCEPTED)
+            }
+
+    return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return {
+            'user': None,
+            'response': Response(status=status.HTTP_401_UNAUTHORIZED)
+            }

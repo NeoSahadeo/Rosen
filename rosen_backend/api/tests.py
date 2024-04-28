@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from django.db.utils import IntegrityError
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -39,11 +40,34 @@ class GroupTest(TestCase):
 
 
 class UserTest(TestCase):
-    def test_creation(self):
+    def setUp(self):
         client.post('/signup/', {
             'username': USERNAME,
             'email': EMAIL,
             'password': PASSWORD,
             'image': IMAGE
             })
+
+    def test_creation(self):
         User.objects.get(username=USERNAME)
+
+    def test_patch(self):
+        user = User.objects.get(username=USERNAME)
+        user.username = 'Neo2'
+        user.save()
+
+        user = User.objects.get(username='Neo2')
+        # response = client.post('/login/', {
+        #     'username_email': USERNAME,
+        #     'password': PASSWORD
+        #     })
+        # response = str(response.content, encoding='utf-8')
+        # print(response)
+        # response = json.loads(response)
+        # session_id = response.get('session_id')
+
+        # client.patch('/patch/', {
+        #     'username': 'Neo2'
+        #     })
+        # user = User.objects.get(username='Neo2')
+        # print(user.image)
