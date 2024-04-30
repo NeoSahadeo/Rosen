@@ -13,6 +13,7 @@ urlpatterns += [
     path('validatesession/', views.ValidateSession.as_view()),
     path('patch/', views.UpdateProfile.as_view()),
     path('fetchprofile/', views.FetchProfileImage.as_view()),
+    path('search/', views.Search.as_view()),
 
     path('', include(router.urls)),
 ]

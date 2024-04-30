@@ -5,17 +5,13 @@ from django.core.validators import (
         validate_email,
         RegexValidator)
 
-validate_username = RegexValidator(regex=r'^\S+$')
-
 
 class User(models.Model):
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=30,
                                 blank=False,
-                                unique=True,
-                                validators=[validate_username])
-    email = models.EmailField(validators=[validate_email],
-                              unique=True,
+                                unique=True,)
+    email = models.EmailField(unique=True,
                               blank=False)
     password = models.CharField(max_length=255,
                                 blank=False)

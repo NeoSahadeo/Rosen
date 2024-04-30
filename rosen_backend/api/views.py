@@ -1,10 +1,11 @@
-import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.models import AnonymousUser
+from django.utils.html import strip_tags
+from django.core.validators import (
+        validate_email,
+        MinLengthValidator)
 from django.db import IntegrityError
-from django.http import HttpResponse
 from api.models import (
         User,
         Group)
@@ -13,7 +14,10 @@ from api.utils import (
         authenticate,
         createSession,
         validateSession,
-        verfiySession)
+        verfiySession,
+        api_response,
+        validate_username,
+        validate_image)
 
 
 class Latest(APIView):
@@ -23,9 +27,6 @@ class Latest(APIView):
 
 class ValidateSession(APIView):
     """Session validation endpoint
-
-    Return 202 if still exists in db
-    Return 401 if session does not exist in db
     """
     def post(self, request):
         sessionid = request.data.get('sessionid')
@@ -34,35 +35,41 @@ class ValidateSession(APIView):
 
 class Signup(APIView):
     def post(self, request):
-        # TODO
-        # Clean data
-        username = request.data.get('username')
-        email = request.data.get('email')
-        password = request.data.get('password')
+        username = strip_tags(request.data.get('username'))
+        email = strip_tags(request.data.get('email'))
+        password = strip_tags(request.data.get('password'))
         image = request.data.get('image')
 
-        hashed_password = hash_password(password)
+        # Validation
+        try:
+            validate_email(email)
+            validate_username(username)
+            validate_image(image)
+        except Exception as error:
+            error = error.__str__()
+            return api_response(message='Sign Up Failed',
+                                data={'error': error},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         try:
             User.objects.get(email=email)
-            return Response({
-                'Email already exists'
-                }, status=status.HTTP_409_CONFLICT)
+            return api_response(message='Email Already Exists',
+                                status=status.HTTP_409_CONFLICT)
         except User.DoesNotExist:
             pass
 
         try:
+            hashed_password = hash_password(password)
             if username and email and password:
                 user = User(username=username,
                             password=hashed_password,
                             email=email,
                             image=image)
                 user.save()
-                return Response(status=status.HTTP_201_CREATED)
+                return api_response(status=status.HTTP_201_CREATED)
         except IntegrityError:
-            return Response({
-                'Username already exists'
-                }, status=status.HTTP_409_CONFLICT)
+            return api_response(message='Username Already Exists',
+                                status=status.HTTP_409_CONFLICT)
 
 
 class Login(APIView):
@@ -79,20 +86,17 @@ class Login(APIView):
             user = authenticate(username=username_email,
                                 password=password)
 
-        # Attempt a user log in
-        # Will return a session
+        # RETURN CORRECT RESPONSE
         if user is not None and user.get('authenticated'):
             user = User.objects.get(username=user.get('username'))
             createSession(user, request)
-            response = Response({
-                'session_id': request.session.session_key,
-                'session_expiry': request.session.set_expiry(0),
-                }, status=status.HTTP_202_ACCEPTED)
-            request.session.set_expiry(0)
-            return response
-
-        user = AnonymousUser()
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return api_response(message='Login Successful',
+                                data={
+                                    'session_id': request.session.session_key,
+                                    'session_expiry': request.session.set_expiry(0)
+                                    },
+                                status=status.HTTP_202_ACCEPTED)
+        return api_response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class CreateGroup(APIView):
@@ -117,14 +121,25 @@ class CreateGroup(APIView):
 
 class UpdateProfile(APIView):
     def post(self, request):
-        # TODO
-        # clean data
         username = request.data.get('username')
         email = request.data.get('email')
         password = request.data.get('password')
         image = request.FILES.get('image')
+
+        # Validation
+        try:
+            validate_email(email)
+            validate_username(username)
+            validate_image(image)
+        except Exception as error:
+            error = error.__str__()
+            return api_response(message='Sign Up Failed',
+                                data={'error': error},
+                                status=status.HTTP_400_BAD_REQUEST)
+
         sessionid = request.data.get('sessionid')
         user = validateSession(sessionid)
+
         if user is not None:
             user.username = username or user.username
             user.email = email or user.email

@@ -1,31 +1,36 @@
+import re
 import bcrypt
+from PIL import Image
 from api.models import User, UserSession
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.sessions.backends.db import SessionStore
-from django.contrib.sessions.models import Session
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.sessions.backends.base import CreateError, SessionBase
 
 
 def hash_password(password):
+    """
+    Uses Bcrypt to salt and hash password
+
+    Returns hashed password
+    """
     password = password.encode('utf-8')
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password, salt)
     hashed_password = hashed_password.decode('utf-8')
-    # check = bcrypt.checkpw(password, hashed_password)
     return hashed_password
 
 
 def authenticate(username, password):
+    """
+    Authenticates user provided password and
+    username against db value
+
+    Returns User or None
+    """
     try:
         user = User.objects.get(username=username)
         password_match = bcrypt.checkpw(password.encode('utf-8'),
                                         user.password.encode('utf-8'))
-        return {
-                'authenticated': password_match,
-                'username': username
-                }
+        return {'authenticated': password_match, 'username': username}
     except User.DoesNotExist:
         return None
 
@@ -60,18 +65,43 @@ def validateSession(sessionid):
 
 def verfiySession(sessionid):
     """
-        Wrapper for return responses
-        for validtesession.
+    Wrapper for return responses
+    for validtesession.
+
+    Return 202 if still exists in db
+    Return 401 if session does not exist in db
     """
     user = validateSession(sessionid)
     if user is not None:
-        return {
-                'user': user,
-                'response': Response(status=status.HTTP_202_ACCEPTED)
-            }
+        return {'user': user, 'response': Response(status=status.HTTP_202_ACCEPTED)}
 
-    return Response(status=status.HTTP_401_UNAUTHORIZED)
-    return {
-            'user': None,
-            'response': Response(status=status.HTTP_401_UNAUTHORIZED)
-            }
+    return {'user': None, 'response': Response(status=status.HTTP_401_UNAUTHORIZED)}
+
+
+def api_response(status, message='', **kwargs):
+    """
+    Wrapper for Response;
+    Provides a system for Uniform Responses
+    """
+    return Response(data={'message': message, 'data': kwargs}, status=status, content_type='application/json')
+
+
+def validate_username(username):
+    # Validates Username \w+
+    valid_username = r'^\w+$'
+
+    username = username.strip()
+
+    if username.__len__() < 2:
+        raise Exception('Username is invalid')
+
+    match = re.match(valid_username, username)
+    if not match:
+        raise Exception('Username is invalid')
+
+
+def validate_image(image):
+    # Validates Image using pillow
+    if image:
+        im = Image.open(image)
+        im.verify()
