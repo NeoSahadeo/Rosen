@@ -113,10 +113,10 @@ class CreateGroup(APIView):
                         description=description,
                         creator=user,
                         image=image)
-                return Response(status=status.HTTP_201_CREATED)
+                return api_response(status=status.HTTP_201_CREATED)
             except IntegrityError:
-                return Response(status=status.HTTP_409_CONFLICT)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+                return api_response(status=status.HTTP_409_CONFLICT)
+        return api_response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UpdateProfile(APIView):
@@ -148,8 +148,8 @@ class UpdateProfile(APIView):
             # Delete previous image
             user.image = image or user.image
             user.save()
-            return Response(status=status.HTTP_202_ACCEPTED)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return api_response(status=status.HTTP_202_ACCEPTED)
+        return api_response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class FetchProfileImage(APIView):
@@ -161,11 +161,11 @@ class FetchProfileImage(APIView):
             image_url = response.image.url
         except ValueError:
             image_url = None
-        return Response({
-            'image': image_url,
-            'username': response.username,
-            'email': response.email
-            })
+        return api_response(message='Profile Fetched',
+                            data={'image': image_url,
+                                  'username': response.username,
+                                  'email': response.email},
+                            status=status.HTTP_200_OK)
 
 
 class Search(APIView):

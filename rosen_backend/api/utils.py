@@ -92,7 +92,7 @@ def validate_username(username):
 
     username = username.strip()
 
-    if username.__len__() < 2:
+    if username.__len__() < 3:
         raise Exception('Username is invalid')
 
     match = re.match(valid_username, username)

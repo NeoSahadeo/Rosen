@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APIRequestFactory, APIClient
 from api.models import (User, Group)
+from api.utils import (validate_username)
 
 # Test Values
 USERNAME = 'NeoSahadeo'
@@ -13,6 +14,8 @@ GROUP_DESCRIPTION = 'A very groupy group.'
 # IMAGE = SimpleUploadedFile('gooby_wooby.png',
 #                            content=b'file_content',
 #                            content_type='image/png')
+SEARCH_USER = f'?q=username={USERNAME}'
+SEARCH_GROUP = f'?q=group={GROUP_NAME}'
 
 factory = APIRequestFactory()
 client = APIClient()
@@ -38,6 +41,36 @@ class UserTest(TestCase):
     def test_creation(self):
         User.objects.get(username=USERNAME)
 
+    def test_collision(self):
+        response = client.post('/signup/', {
+            'username': USERNAME,
+            'email': EMAIL,
+            'password': PASSWORD,
+            })
+        self.assertEqual(response.status_code, 409)
+
+    def test_invalid_credentials(self):
+        response = client.post('/signup/', {
+            'username': 'ne',
+            'email': 'neoSahadeo@gm.com',
+            'password': PASSWORD,
+            })
+        self.assertEqual(response.status_code, 400)
+
+        response = client.post('/signup/', {
+            'username': 'Neo',
+            'email': 'neoSahadeogm.com',
+            'password': PASSWORD,
+            })
+        self.assertEqual(response.status_code, 400)
+
+        response = client.post('/signup/', {
+            'username': USERNAME,
+            'email': EMAIL,
+            'password': '',
+            })
+        self.assertEqual(response.status_code, 409)
+
     def test_patch(self):
         user = User.objects.get(username=USERNAME)
         user.username = 'Neo'
@@ -52,3 +85,7 @@ class UserTest(TestCase):
         # Correct credentials
         response = client.post('/login/', {'username_email': USERNAME, 'password': PASSWORD})
         self.assertEqual(response.status_code, 202)
+
+
+class SearchTest(TestCase):
+    pass
