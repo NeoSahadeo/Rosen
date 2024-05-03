@@ -1,23 +1,16 @@
+import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils.html import strip_tags
-from django.core.validators import (
-        validate_email,
-        MinLengthValidator)
+from django.core.validators import (validate_email, MinLengthValidator)
 from django.db import IntegrityError
-from api.models import (
-        User,
-        Group)
-from api.utils import (
-        hash_password,
-        authenticate,
-        createSession,
-        validateSession,
-        verfiySession,
-        api_response,
-        validate_username,
-        validate_image)
+from api.serializers import (
+        PublicUserSerializer, UserSerializer)
+from api.models import (User, Group)
+from api.utils import (hash_password, authenticate, createSession,
+                       validateSession, verfiySession, api_response,
+                       validate_username, validate_image)
 
 
 class Latest(APIView):
@@ -28,9 +21,10 @@ class Latest(APIView):
 class ValidateSession(APIView):
     """Session validation endpoint
     """
+
     def post(self, request):
-        sessionid = request.data.get('sessionid')
-        return verfiySession(sessionid)['response']
+        session_id = request.data.get('session_id')
+        return verfiySession(session_id)['response']
 
 
 class Signup(APIView):
@@ -94,25 +88,25 @@ class Login(APIView):
                                 data={
                                     'session_id': request.session.session_key,
                                     'session_expiry': request.session.set_expiry(0)
-                                    },
+                                },
                                 status=status.HTTP_202_ACCEPTED)
         return api_response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class CreateGroup(APIView):
     def post(self, request):
-        sessionid = request.data.get('sessionid')
+        session_id = request.data.get('session_id')
         group_name = request.data.get('group_name')
         description = request.data.get('description')
         image = request.FILES['image']
-        user = validateSession(sessionid)
+        user = validateSession(session_id)
         if user is not None:
             try:
                 Group.objects.create(
-                        name=group_name,
-                        description=description,
-                        creator=user,
-                        image=image)
+                    name=group_name,
+                    description=description,
+                    creator=user,
+                    image=image)
                 return api_response(status=status.HTTP_201_CREATED)
             except IntegrityError:
                 return api_response(status=status.HTTP_409_CONFLICT)
@@ -137,8 +131,8 @@ class UpdateProfile(APIView):
                                 data={'error': error},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-        sessionid = request.data.get('sessionid')
-        user = validateSession(sessionid)
+        session_id = request.data.get('session_id')
+        user = validateSession(session_id)
 
         if user is not None:
             user.username = username or user.username
@@ -152,22 +146,63 @@ class UpdateProfile(APIView):
         return api_response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-class FetchProfileImage(APIView):
-    # NEED TO ABSTRACT
+class FetchProfilePrivate(APIView):
     def post(self, request):
-        sessionid = str(request.body, 'utf-8')
-        response = verfiySession(sessionid)['user']
+        session_id = request.data.get('session_id')
+
+        user = verfiySession(session_id).get('user')
+        if user is None:
+            return api_response(message='Session Invalid',
+                                status=status.HTTP_401_UNAUTHORIZED)
         try:
-            image_url = response.image.url
+            image_url = user.image.url
         except ValueError:
             image_url = None
+
+        user_serial = UserSerializer(user).data
+
         return api_response(message='Profile Fetched',
-                            data={'image': image_url,
-                                  'username': response.username,
-                                  'email': response.email},
+                            data={'image_url': image_url,
+                                  'user': user_serial},
                             status=status.HTTP_200_OK)
 
 
 class Search(APIView):
+    def __init__(self):
+        self.search_values = {
+                'user': self.user_search,
+                'group': self.group_search
+                }
+
+    def user_search(self, username):
+        try:
+            user = User.objects.get(username=username)
+            user_serial = PublicUserSerializer(user)
+            try:
+                image_url = user.image.url
+            except ValueError:
+                image_url = None
+            return {'object': user_serial.data, 'image_url': image_url}
+        except User.DoesNotExist:
+            return None
+
+    def group_search(self, group_name):
+        try:
+            return Group.objects.get(name=group_name)
+        except Group.DoesNotExist:
+            return None
+
     def get(self, request):
-        pass
+        search_type = request.GET.get('type')
+        username_or_name = request.GET.get('value')
+        if not search_type:
+            return api_response(message='Search type is missing',
+                                status=status.HTTP_204_NO_CONTENT)
+
+        match = self.search_values[search_type](username_or_name)
+        if match is None:
+            return api_response(message=f'{username_or_name} does not exist',
+                                status=status.HTTP_404_NOT_FOUND)
+
+        return api_response(status=status.HTTP_200_OK,
+                            data=match)

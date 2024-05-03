@@ -86,6 +86,28 @@ class UserTest(TestCase):
         response = client.post('/login/', {'username_email': USERNAME, 'password': PASSWORD})
         self.assertEqual(response.status_code, 202)
 
+    def test_private_fetch(self):
+        response = client.post('/login/', {'username_email': USERNAME, 'password': PASSWORD})
+        session_id = json.loads(str(response.content, 'utf-8')).get('content').get('data').get('session_id')
+        response = client.post('/fetchprofile/', {'session_id':session_id})
+        self.assertEqual(response.status_code, 200)
+
+
 
 class SearchTest(TestCase):
-    pass
+    def setUp(self):
+        client.post('/signup/', {
+            'username': USERNAME,
+            'email': EMAIL,
+            'password': PASSWORD,
+            })
+
+    def test_missing(self):
+        response = client.get('/search/?value=NeoSahadeo')
+        self.assertEqual(response.status_code, 204)
+
+    def test_search(self):
+        response = client.get('/search/?type=user&value=NeoSahadeo')
+        response_object = json.loads(str(response.content, 'utf-8'))
+        self.assertEqual(response_object.get('content').get('data').get('object').get('username'), 'NeoSahadeo')
+        self.assertEqual(response.status_code, 200)

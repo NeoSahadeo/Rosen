@@ -49,21 +49,21 @@ def createSession(user, request):
         UserSession.objects.create(user_id=user.id, session_id=request.session.session_key)
 
 
-def validateSession(sessionid):
+def validateSession(session_id):
     """
     Take in session and checks the SessionStore
 
     Returns a logged in User or None
     """
     try:
-        session = UserSession.objects.get(session_id=sessionid)
+        session = UserSession.objects.get(session_id=session_id)
         user = User.objects.get(id=session.user_id)
         return user
     except UserSession.DoesNotExist:
         return None
 
 
-def verfiySession(sessionid):
+def verfiySession(session_id):
     """
     Wrapper for return responses
     for validtesession.
@@ -71,7 +71,7 @@ def verfiySession(sessionid):
     Return 202 if still exists in db
     Return 401 if session does not exist in db
     """
-    user = validateSession(sessionid)
+    user = validateSession(session_id)
     if user is not None:
         return {'user': user, 'response': Response(status=status.HTTP_202_ACCEPTED)}
 
@@ -83,7 +83,7 @@ def api_response(status, message='', **kwargs):
     Wrapper for Response;
     Provides a system for Uniform Responses
     """
-    return Response(data={'message': message, 'data': kwargs}, status=status, content_type='application/json')
+    return Response(data={'message': message, 'content': kwargs}, status=status, content_type='application/json')
 
 
 def validate_username(username):
