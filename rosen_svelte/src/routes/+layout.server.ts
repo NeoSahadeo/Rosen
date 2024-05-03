@@ -14,38 +14,32 @@ export const load: PageServerLoad = async ({cookies, url}) =>
     '/',
     '/account/profile',
   ]
-  let sessionid = cookies.get('sessionid')
-  let username, image;
+  let session_id = cookies.get('session_id'), 
+  user_data, message;
 
   // Check session id against server every refresh
-  // Invalidate session if sessionid is none [status=401.HTTP_401_UNAUTHORIZED]
-  if (sessionid)
+  // Invalidate session if session_id is none [status=401.HTTP_401_UNAUTHORIZED]
+  if (session_id)
   {
     const formData = new FormData()
-    formData.append("sessionid", sessionid)
-    const response = await fetch(
-      'http://127.0.0.1:8000/validatesession/',
-      {
-        method: "POST",
-        body: formData
-      }
-    )
+    formData.append("session_id", session_id)
+    const response = await fetch( 'http://127.0.0.1:8000/validatesession/', { method: "POST", body: formData })
+    const responseJson = await response.json()
     if (!response.ok)
     {
-      cookies.delete('sessionid', { path: '/' })
-      sessionid = null
+      cookies.delete('session_id', { path: '/' })
+      session_id = null
     }
     else
     {
-      // LOAD USER DATA IF LOGGED IN
-      const response = await LoadProfile(sessionid)
-      image = response.image
-      username = response.username
+      // Return user data *PRIVATE*
+      user_data = responseJson.content.data
+      message = responseJson.message
     }
   }
 
   // Redirect if user is not logged in
-  if (!sessionid &&
+  if (!session_id &&
      !allowedAnonymousPath.includes(url.pathname))
   {
     redirect(308, '/');
@@ -54,16 +48,12 @@ export const load: PageServerLoad = async ({cookies, url}) =>
   // Clean messages
   messages.reset();
 
-  // Always return Session ID AND whether or
-  // not the nav is hidden on the page.
   const returnResponse = {
-    sessionid,
+    session_id,
     hideNav,
+    user_data,
+    message
   }
-
-  // Return Logged in User Data
-  returnResponse.image = image || undefined;
-  returnResponse.username = username || undefined;
 
   return returnResponse
 }

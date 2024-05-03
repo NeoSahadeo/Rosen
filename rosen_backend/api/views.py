@@ -6,10 +6,10 @@ from django.utils.html import strip_tags
 from django.core.validators import (validate_email, MinLengthValidator)
 from django.db import IntegrityError
 from api.serializers import (
-        PublicUserSerializer, UserSerializer)
+        PublicUserSerializer, UserSerializerPrivate)
 from api.models import (User, Group)
 from api.utils import (hash_password, authenticate, createSession,
-                       validateSession, verfiySession, api_response,
+                       validateSession, verifySession, api_response,
                        validate_username, validate_image)
 
 
@@ -24,7 +24,14 @@ class ValidateSession(APIView):
 
     def post(self, request):
         session_id = request.data.get('session_id')
-        return verfiySession(session_id)['response']
+        response = verifySession(session_id)
+        if not response.get('user'):
+            return api_response(status=response.get('status'))
+
+        user_serial = UserSerializerPrivate(response.get('user'))
+        return api_response(message='Session Verified',
+                            data=user_serial.data,
+                            status=response.get('status'))
 
 
 class Signup(APIView):
@@ -80,17 +87,18 @@ class Login(APIView):
             user = authenticate(username=username_email,
                                 password=password)
 
-        # RETURN CORRECT RESPONSE
         if user is not None and user.get('authenticated'):
             user = User.objects.get(username=user.get('username'))
             createSession(user, request)
-            return api_response(message='Login Successful',
+            return api_response(message='Log in Successful',
                                 data={
                                     'session_id': request.session.session_key,
-                                    'session_expiry': request.session.set_expiry(0)
+                                    'session_expiry': request.session.set_expiry(0),
+                                    'path': '/'
                                 },
                                 status=status.HTTP_202_ACCEPTED)
-        return api_response(status=status.HTTP_401_UNAUTHORIZED)
+        return api_response(message='Log in Failed',
+                            status=status.HTTP_401_UNAUTHORIZED)
 
 
 class CreateGroup(APIView):
@@ -150,7 +158,7 @@ class FetchProfilePrivate(APIView):
     def post(self, request):
         session_id = request.data.get('session_id')
 
-        user = verfiySession(session_id).get('user')
+        user = verifySession(session_id).get('user')
         if user is None:
             return api_response(message='Session Invalid',
                                 status=status.HTTP_401_UNAUTHORIZED)
@@ -159,7 +167,7 @@ class FetchProfilePrivate(APIView):
         except ValueError:
             image_url = None
 
-        user_serial = UserSerializer(user).data
+        user_serial = UserSerializerPrivate(user).data
 
         return api_response(message='Profile Fetched',
                             data={'image_url': image_url,

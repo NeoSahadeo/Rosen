@@ -2,23 +2,24 @@ import icons from "./icons";
 import { fetchProfileURL, basePath } from "./urls";
 import type { Message } from '$lib/interfaces';
 
-const Login = async (URL: string, headers, cookies): Promise<{login: boolean, status: number}> => {
+const Login = async (URL: string, headers, cookies): Promise<{login: boolean, response: object, status: number}> => {
   try
   {
     const response = await fetch(URL, headers);
-    if (response.ok)
+    const responseJson = await response.json()
+    if (response.status === 202)
     {
-      let responseJson = CookieJsoner(response.headers.getSetCookie()[0])
-      // Set path = Path because sveltekit path is case sens.
-      responseJson['path'] = responseJson['Path']
-      cookies.set('sessionid', responseJson['sessionid'], responseJson)      
-      return {login: true, status: response.status}
+      console.log(responseJson.content.data.path)
+      cookies.set('session_id',
+      responseJson.content.data.session_id,
+      {path: responseJson.content.data.path})
+      return {login: true, response: responseJson, status: response.status}
     }
-    return {login: false, status: response.status}
+    return {login: false, response: responseJson, status: response.status}
   }
   catch (error)
   {
-    return {login: false, status: 444}
+    return {login: false, response: {'message': error}, status: 444}
   }
 }
 

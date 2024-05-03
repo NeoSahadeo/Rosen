@@ -7,7 +7,7 @@ import messages from '$lib/messages.json';
 
 export const load: PageServerLoad = async({ cookies }) =>
 {
-  if(cookies.get('sessionid'))
+  if(cookies.get('session_id'))
   {
     redirect(302, '/feed/latest/');
   }

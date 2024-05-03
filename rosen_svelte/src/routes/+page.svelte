@@ -9,7 +9,7 @@
   <h1 class="sm:mt-20 text-white sm:text-5xl text-4xl mt-12" style="font-weight: 300; text-wrap: nowrap;">The Rosen Project</h1>
   <nav class="w-full flex items-center flex-col mt-4">
     <div class="flex flex-row text-white items-center" >
-      {#if !data.sessionid}
+      {#if !data.session_id}
       <a href="account/signup" class="button-primary">Sign Up</a>
         <span class="mx-2" >
         or

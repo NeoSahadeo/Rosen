@@ -8,20 +8,18 @@
   import { messages } from "$lib/stores.js";
   export let data;
 
-  if (data.sessionid != undefined)
+  if (data.session_id != undefined)
   {
-    messages.send('Session Verfied', 200, 1000)
+    messages.send(data.message, 200, 1000)
   }
 </script>
 <Message />
 <Main>
-  {#if ((data.sessionid != undefined) && (!data.hideNav.includes($page.url.pathname)))}
-  <!--DESKTOP NAV-->
-  <DesktopNavBar username={data.username} image={data.image}/>
-  <!--DESKTOP NAV-->
-  <!--MOBILE NAV-->
-  <MobileNavBar />
-  <!--MOBILE NAV-->
+  {#if ((data.session_id != undefined) && (!data.hideNav.includes($page.url.pathname)))}
+    <!--DESKTOP NAV-->
+    <DesktopNavBar username={data.user_data.username} image={data.user_data.image}/>
+    <!--MOBILE NAV-->
+    <MobileNavBar />
   {/if}
   <slot></slot>
 </Main>

@@ -63,19 +63,19 @@ def validateSession(session_id):
         return None
 
 
-def verfiySession(session_id):
+def verifySession(session_id):
     """
     Wrapper for return responses
     for validtesession.
 
-    Return 202 if still exists in db
-    Return 401 if session does not exist in db
+    Return {user, 202} if still exists in db
+    Return {none, 401} if session does not exist in db
     """
     user = validateSession(session_id)
     if user is not None:
-        return {'user': user, 'response': Response(status=status.HTTP_202_ACCEPTED)}
+        return {'user': user, 'status': status.HTTP_202_ACCEPTED}
 
-    return {'user': None, 'response': Response(status=status.HTTP_401_UNAUTHORIZED)}
+    return {'user': None, 'response': status.HTTP_401_UNAUTHORIZED}
 
 
 def api_response(status, message='', **kwargs):

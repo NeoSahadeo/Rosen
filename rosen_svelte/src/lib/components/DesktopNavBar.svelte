@@ -1,5 +1,6 @@
 <script>
     import { Icon } from "$lib/api";
+    import { basePath } from "$lib/urls";
     let searchFocus = false;
     let localScrollY, navHeight;
     const iconSize = '2.5rem';
@@ -32,7 +33,7 @@
             {@html Icon('notifications')}
         </button>
         <a class="hover:cursor-pointer" href="/account/profile/" >
-            <img src={image} class="object-cover rounded-full" style="width: {profileSize}; height: {profileSize};" alt="{username} profile photo">
+            <img src={basePath+image} class="object-cover rounded-full" style="width: {profileSize}; height: {profileSize};" alt="{username} profile photo">
         </a>
     </div>
 </nav>

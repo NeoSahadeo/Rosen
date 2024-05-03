@@ -6,7 +6,7 @@ import type { Message } from '$lib/interfaces';
 import messages from '$lib/messages.json';
 
 export const load: PageServerLoad = ({ cookies }) => {
-  if (cookies.get('sessionid')) {
+  if (cookies.get('session_id')) {
     redirect(302, '/feed/latest/');
   }
 }
@@ -19,7 +19,7 @@ export const actions = {
     if (response.login)
     {
       return {
-        message: messages.log_in_successfull,
+        message: response.response.message,
         status: response.status,
       }
     }
@@ -33,7 +33,7 @@ export const actions = {
         }
       }
       return {
-        message: messages.log_in_failed,
+        message: response.response.message,
         status: response.status
       }
     }
