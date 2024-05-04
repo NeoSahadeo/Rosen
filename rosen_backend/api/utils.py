@@ -75,12 +75,12 @@ def verifySession(session_id):
     if user is not None:
         return {'user': user, 'status': status.HTTP_202_ACCEPTED}
 
-    return {'user': None, 'response': status.HTTP_401_UNAUTHORIZED}
+    return {'user': None, 'status': status.HTTP_401_UNAUTHORIZED}
 
 
 def api_response(status, message='', **kwargs):
     """
-    Wrapper for Response;
+    Wrapper for Response.
     Provides a system for Uniform Responses
     """
     return Response(data={'message': message, 'content': kwargs}, status=status, content_type='application/json')

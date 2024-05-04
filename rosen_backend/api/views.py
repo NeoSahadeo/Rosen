@@ -6,7 +6,7 @@ from django.utils.html import strip_tags
 from django.core.validators import (validate_email, MinLengthValidator)
 from django.db import IntegrityError
 from api.serializers import (
-        PublicUserSerializer, UserSerializerPrivate)
+        UserSerializerPublic, UserSerializerPrivate)
 from api.models import (User, Group)
 from api.utils import (hash_password, authenticate, createSession,
                        validateSession, verifySession, api_response,
@@ -21,7 +21,6 @@ class Latest(APIView):
 class ValidateSession(APIView):
     """Session validation endpoint
     """
-
     def post(self, request):
         session_id = request.data.get('session_id')
         response = verifySession(session_id)
@@ -162,16 +161,11 @@ class FetchProfilePrivate(APIView):
         if user is None:
             return api_response(message='Session Invalid',
                                 status=status.HTTP_401_UNAUTHORIZED)
-        try:
-            image_url = user.image.url
-        except ValueError:
-            image_url = None
 
         user_serial = UserSerializerPrivate(user).data
 
         return api_response(message='Profile Fetched',
-                            data={'image_url': image_url,
-                                  'user': user_serial},
+                            data=user_serial,
                             status=status.HTTP_200_OK)
 
 
@@ -185,12 +179,8 @@ class Search(APIView):
     def user_search(self, username):
         try:
             user = User.objects.get(username=username)
-            user_serial = PublicUserSerializer(user)
-            try:
-                image_url = user.image.url
-            except ValueError:
-                image_url = None
-            return {'object': user_serial.data, 'image_url': image_url}
+            user_serial = UserSerializerPublic(user)
+            return user_serial.data
         except User.DoesNotExist:
             return None
 

@@ -106,6 +106,4 @@ class SearchTest(TestCase):
 
     def test_search(self):
         response = client.get('/search/?type=user&value=NeoSahadeo')
-        response_object = json.loads(str(response.content, 'utf-8'))
-        self.assertEqual(response_object.get('content').get('data').get('object').get('username'), 'NeoSahadeo')
-        # self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)

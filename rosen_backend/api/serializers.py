@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 
-class PublicUserSerializer(serializers.Serializer):
+class UserSerializerPublic(serializers.Serializer):
     username = serializers.CharField(max_length=30)
     image = serializers.ImageField()
 
