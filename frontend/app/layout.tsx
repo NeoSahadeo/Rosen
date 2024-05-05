@@ -20,13 +20,15 @@ const theme = createTheme({
 export default function RootLayout({ children }: {children: React.ReactNode})
 {
   return (
-    <html lang='en' className={roboto.className}>
+    <html lang='en' className={roboto.className} data-mantine-color-scheme='dark'>
       <head>
 	<link rel='icon' href='./favicon.ico?v=1' sizes='any'/>
-	<ColorSchemeScript/>
+	<ColorSchemeScript defaultColorScheme="dark"/>
       </head>
       <body>
-	<MantineProvider defaultColorScheme="dark" theme={theme}>{children}</MantineProvider>
+	<MantineProvider defaultColorScheme="dark" theme={theme}>
+	  {children}
+	</MantineProvider>
       </body>
     </html>
   );

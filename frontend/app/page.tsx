@@ -3,9 +3,11 @@ import {
   Button,
   Anchor
 } from "@mantine/core"
+import { cookies } from "next/headers"
 
 function HomePage()
 {
+  const session_id = cookies().get('session_id')
   return (
     <main className='flex flex-col items-center h-screen'>
       <h1 className="sm:text-4xl text-3xl mt-4 text-cyan-500">The Rosen Project</h1>
