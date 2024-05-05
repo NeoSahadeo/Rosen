@@ -86,9 +86,15 @@ class UserTest(TestCase):
 
     def test_private_fetch(self):
         response = client.post('/login/', {'username_email': USERNAME, 'password': PASSWORD})
-        session_id = json.loads(str(response.content, 'utf-8')).get('content').get('data').get('session_id')
-        response = client.post('/fetchprofile/', {'session_id':session_id})
+        session = json.loads(str(response.content, 'utf-8')) 
+        session_id = session.get('data').get('session_id')
+        response = client.post('/fetchprofile/', {'session_id': session_id})
         self.assertEqual(response.status_code, 200)
+
+    # def test_session_data(self):
+    #     response = client.post('/login/', {'username_email': USERNAME, 'password': PASSWORD})
+    #     session = json.loads(str(response.content, 'utf-8'))
+    #     print(session)
 
 
 

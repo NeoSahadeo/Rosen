@@ -35,10 +35,10 @@ def authenticate(username, password):
         return None
 
 
-def createSession(user, request):
+def fetch_session(user, request):
     """
-    If the user exists creates a session id
-    attached to request.session
+    If the user exists in sessionstore attach
+    user to request. Else creates a new session
     """
     try:
         usersession = UserSession.objects.get(user_id=user.id)
@@ -48,8 +48,12 @@ def createSession(user, request):
         request.session.create()
         UserSession.objects.create(user_id=user.id, session_id=request.session.session_key)
 
+    request.session['session_id'] = request.session.session_key
+    request.session['expiry'] = request.session.set_expiry(0)
+    request.session['path'] = '/'
 
-def validateSession(session_id):
+
+def validate_session(session_id):
     """
     Take in session and checks the SessionStore
 
@@ -63,7 +67,7 @@ def validateSession(session_id):
         return None
 
 
-def verifySession(session_id):
+def verify_session(session_id):
     """
     Wrapper for return responses
     for validtesession.
@@ -71,7 +75,7 @@ def verifySession(session_id):
     Return {user, 202} if still exists in db
     Return {none, 401} if session does not exist in db
     """
-    user = validateSession(session_id)
+    user = validate_session(session_id)
     if user is not None:
         return {'user': user, 'status': status.HTTP_202_ACCEPTED}
 
@@ -83,7 +87,7 @@ def api_response(status, message='', **kwargs):
     Wrapper for Response.
     Provides a system for Uniform Responses
     """
-    return Response(data={'message': message, 'content': kwargs}, status=status, content_type='application/json')
+    return Response(data={'message': message, **kwargs}, status=status, content_type='application/json')
 
 
 def validate_username(username):

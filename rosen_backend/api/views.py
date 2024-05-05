@@ -8,8 +8,8 @@ from django.db import IntegrityError
 from api.serializers import (
         UserSerializerPublic, UserSerializerPrivate)
 from api.models import (User, Group)
-from api.utils import (hash_password, authenticate, createSession,
-                       validateSession, verifySession, api_response,
+from api.utils import (hash_password, authenticate, fetch_session,
+                       validate_session, verify_session, api_response,
                        validate_username, validate_image)
 
 
@@ -23,7 +23,7 @@ class ValidateSession(APIView):
     """
     def post(self, request):
         session_id = request.data.get('session_id')
-        response = verifySession(session_id)
+        response = verify_session(session_id)
         if not response.get('user'):
             return api_response(status=response.get('status'))
 
@@ -74,9 +74,10 @@ class Signup(APIView):
 
 class Login(APIView):
     def post(self, request):
-        username_email = request.data.get('username_email')
+        username_email = request.data.get('username_or_email')
         password = request.data.get('password')
 
+        print(request.data)
         # Authenticate with username or email
         try:
             user_email = User.objects.get(email=username_email)
@@ -88,13 +89,9 @@ class Login(APIView):
 
         if user is not None and user.get('authenticated'):
             user = User.objects.get(username=user.get('username'))
-            createSession(user, request)
-            return api_response(message='Log in Successful',
-                                data={
-                                    'session_id': request.session.session_key,
-                                    'session_expiry': request.session.set_expiry(0),
-                                    'path': '/'
-                                },
+            fetch_session(user, request)
+            return api_response(data=request.session,
+                                message='Log in Successful',
                                 status=status.HTTP_202_ACCEPTED)
         return api_response(message='Log in Failed',
                             status=status.HTTP_401_UNAUTHORIZED)
@@ -106,7 +103,7 @@ class CreateGroup(APIView):
         group_name = request.data.get('group_name')
         description = request.data.get('description')
         image = request.FILES['image']
-        user = validateSession(session_id)
+        user = validate_session(session_id)
         if user is not None:
             try:
                 Group.objects.create(
@@ -139,7 +136,7 @@ class UpdateProfile(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
         session_id = request.data.get('session_id')
-        user = validateSession(session_id)
+        user = validate_session(session_id)
 
         if user is not None:
             user.username = username or user.username
@@ -157,7 +154,7 @@ class FetchProfilePrivate(APIView):
     def post(self, request):
         session_id = request.data.get('session_id')
 
-        user = verifySession(session_id).get('user')
+        user = verify_session(session_id).get('user')
         if user is None:
             return api_response(message='Session Invalid',
                                 status=status.HTTP_401_UNAUTHORIZED)
