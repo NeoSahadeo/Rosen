@@ -1,6 +1,6 @@
 <script lang="ts">
   import '../app.postcss';
-  import Toast from '$lib/Components/Toast.svelte'
+  import Message from '$lib/Components/Message.svelte';
 </script>
-<Toast />
+<Message />
 <slot />
