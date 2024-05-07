@@ -1,5 +1,8 @@
 <script lang="ts">
   import DefaultButton from "$lib/Components/DefaultButton.svelte";
+  import { session } from "$lib/stores";
+  import urls from '$lib/urls';
+  const hide = $session ? false : true;
 </script>
 <main class='flex flex-col w-screen h-screen items-center'>
   <div class="h-1/5 pt-10">
@@ -10,13 +13,18 @@
     <img src='images/Rosen1080.png' alt="The Rosen Project Blackhole" style="max-height: 80%;">
   </div>
   <div class='h-1/5 pt-4 flex flex-col items-center w-full'>
-    <div class="flex flex-row items-center max-w-sm w-full justify-center">
-      <a href='/user/actions/signup'>
+    <div class='flex flex-row items-center max-w-sm w-full justify-center {hide ? "" : "hidden"}'>
+      <a href={urls.signup}>
 	<DefaultButton text={'Sign Up'} /> 
       </a>
       <p class="mx-8">Or</p>
-      <a href='/user/actions/login'>
+      <a href={urls.login}>
 	<DefaultButton text={'Log In'} /> 
+      </a>
+    </div>
+    <div class='{hide ? "hidden" : "block"}'>
+      <a href={urls.latest}>
+	<DefaultButton text={'Check Out The Latest!'} /> 
       </a>
     </div>
     <p class="mt-5">Explore <a class="text-cyan-400" href='https://github.com/NeoSahadeo/Rosen'> The Rosen Project </a>repo</p>

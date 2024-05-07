@@ -1,8 +1,8 @@
 <script>
-  import { messages } from "$lib/stores";
   import { fade, fly } from 'svelte/transition';
   import { expoInOut } from "svelte/easing";
   import Icon from '@iconify/svelte';
+  import { messages } from '$lib/stores';
 </script>
 <section class="fixed top-2 left-1/2 -translate-x-1/2 sm:max-w-sm max-w-80 w-full">
   {#each $messages as message}

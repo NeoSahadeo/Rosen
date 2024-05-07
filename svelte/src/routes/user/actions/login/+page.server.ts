@@ -1,6 +1,7 @@
 import type { Actions } from './$types';
 import type { Message } from '$lib/interfaces';
 import { defaultMessage } from '$lib/Components/messageFormat';
+import urls from '$lib/urls';
 
 export const actions = {
   default: async ({cookies, request}): Promise<Omit<Message, 'id'>> => {
@@ -8,23 +9,23 @@ export const actions = {
     try
     {
       const response = await fetch(
-	'http://127.0.0.1:8000/login/', {
+	urls.backendLogin, {
 	method: 'post',
 	body: formData
       })
       const data = await response.json()
       if (response.ok)
       {
-	console.log(data)
 	cookies.set('session_id', data.data.session_id, {
 	  path: '/',
 	  expires: data._session_expiry,
 	  httpOnly: true,
-	  secure: true,
+	  secure: false,
 	})
 	return {
 	  message: defaultMessage(data.message, response.status),
 	  classes: 'variant-filled-success',
+	  timeout: 5000,
 	}
       }
       return {

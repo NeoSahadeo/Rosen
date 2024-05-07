@@ -7,7 +7,7 @@ const nonAuthPaths = [
   '/user/actions/login',
 ]
 
-export const load = async ({ cookies, params, url }): Promise<Omit<Message, 'id'>>=> {
+export const load = async ({ cookies, url }): Promise<Omit<Message, 'id'> & {data?: {}}>=> {
   const session_id = cookies.get('session_id')
 
   if (session_id)
@@ -22,12 +22,12 @@ export const load = async ({ cookies, params, url }): Promise<Omit<Message, 'id'
 	body: JSON.stringify({session_id})
       })
       const data = await response.json()
-      console.log(data)
       if (response.ok)
       {
 	return {
 	  message: data.message,
-	  status: response.status
+	  status: response.status,
+	  data: data.data
 	}
       }
       return {
