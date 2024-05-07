@@ -25,7 +25,8 @@ class ValidateSession(APIView):
         session_id = request.data.get('session_id')
         response = verify_session(session_id)
         if not response.get('user'):
-            return api_response(status=response.get('status'))
+            return api_response(message='Session No Longer Valid',
+                                status=response.get('status'))
 
         user_serial = UserSerializerPrivate(response.get('user'))
         return api_response(message='Session Verified',

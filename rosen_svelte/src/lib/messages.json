@@ -1,8 +1,0 @@
-{
-    "log_in_successfull": "Log in successful",
-    "log_in_failed": "Log in failed",
-    "sign_up_successfull": "Sign up successful",
-    "server_con_failed": "Connection to server failed",
-    "profile_update_success": "Updated profile",
-    "profile_update_failed": "Updating profile failed"
-}
