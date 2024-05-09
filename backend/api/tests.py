@@ -1,6 +1,7 @@
 import json
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
+import rest_framework
 from rest_framework.test import APIRequestFactory, APIClient
 from api.models import (User, Group)
 from api.utils import (validate_username)

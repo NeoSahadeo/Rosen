@@ -25,7 +25,6 @@ use:enhance={({formElement, formData, action, cancel, submitter})=>
   return async({result, update}) => { 
     callback(result, update); 
     invalidateAll()
-    update()
   }
 }
 }>
