@@ -78,7 +78,6 @@ class Login(APIView):
         username_email = request.data.get('username_or_email')
         password = request.data.get('password')
 
-        print(request.data)
         # Authenticate with username or email
         try:
             user_email = User.objects.get(email=username_email)
