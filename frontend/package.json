@@ -37,6 +37,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@floating-ui/dom": "^1.6.5",
 		"svelte-french-toast": "^1.2.0"
 	}
 }

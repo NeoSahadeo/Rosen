@@ -1,8 +1,26 @@
 <script lang="ts">
+	import { logout } from '$lib/stores';
+	import { onMount } from 'svelte';
 	export let data;
+
+	let mainDiv: HTMLElement;
+	onMount(() => {
+		// This is the level of jank I love!
+		// Creates a fake form to logout a user
+		// when the state of logout changes.
+		logout.subscribe((isLogout) => {
+			if (isLogout) {
+				const form = document.createElement('form');
+				form.method = 'post';
+				form.action = '?/logout';
+				mainDiv?.append(form);
+				form.submit();
+			}
+		});
+	});
 </script>
 
-<div class="flex flex-col items-center justify-center" style="height: 100dvh;">
+<div class="flex flex-col items-center justify-center" style="height: 100dvh;" bind:this={mainDiv}>
 	<h1 class="sm:text-5xl text-4xl font-bold sm:text-nowrap mb-2">The Rosen Project</h1>
 	<span class="sm:text-xl text-center">
 		A

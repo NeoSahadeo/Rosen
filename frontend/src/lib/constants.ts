@@ -1,3 +1,4 @@
+const localServer = 'http://localhost:5173'
 const baseServer = 'http://127.0.0.1:8000'
 
 // path('signup/', views.Signup.as_view()),
@@ -8,7 +9,10 @@ const baseServer = 'http://127.0.0.1:8000'
 // path('search/', views.Search.as_view()),
 
 const urls = {
-	validateSession: baseServer + '/validatesession/'
+	validateSession: baseServer + '/validatesession/',
+	fetchProfile: baseServer + '/fetchprofile/',
+
+	userSettings: localServer + '/user/',
 }
 
 const allowedNonAuth = [

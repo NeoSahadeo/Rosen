@@ -7,7 +7,7 @@
 </script>
 
 <a href="../">
-	<Backheader />
+	<Backheader title="Log In" />
 </a>
 <div class="container max-w-sm sm:pl-10 sm:px-0 px-4">
 	<form
@@ -23,7 +23,7 @@
 			};
 		}}
 	>
-		<h1 class="text-4xl font-bold my-5 mb-10">Log In</h1>
+		<!-- <h1 class="text-4xl font-bold my-5 mb-10">Log In</h1> -->
 		<label class="input input-bordered flex items-center gap-2">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

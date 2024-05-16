@@ -1,3 +1,7 @@
+<script lang="ts">
+	export let title = '';
+</script>
+
 <div class="navbar shadow-xl">
 	<div class="">
 		<svg
@@ -17,4 +21,5 @@
 			/>
 		</svg>
 	</div>
+	<h1 class="text-3xl font-bold ml-3">{title}</h1>
 </div>
