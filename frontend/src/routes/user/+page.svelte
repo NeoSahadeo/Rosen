@@ -4,13 +4,42 @@
 	import SettingsHeader from './settingsHeader.svelte';
 	import { baseServer } from '$lib/constants.js';
 	import { logoutFunction } from '$lib/api';
+	import TopLevelNotification from '$lib/components/ui/topLevelNotification.svelte';
+	import { onMount } from 'svelte';
 	export let data;
 	const profileImageURL = baseServer + data.image;
 	const imageSize = '6rem';
+
+	let fileInput: HTMLInputElement;
+	let fileValue: any;
+
+	let formData: HTMLFormElement;
+	let originalForm: FormData;
+	onMount(()=>{
+		originalForm = new FormData(formData);
+	})
+
+	let formObject;
+	let changes = 0;
+	function getFormData() {
+		changes = 0;
+		formObject = new FormData(formData);
+		compareContent(originalForm, formObject)
+	}
+
+	function compareContent(source: FormData, input: FormData) {
+		source.forEach((value, key) => {
+			if (!(input.get(key) == value)){
+				changes++;
+			}
+		})
+	}
 </script>
 
+{#if changes > 0 || fileValue !== undefined}
+<TopLevelNotification warning="Make Sure to Save Changes" />
+{/if}
 <a
-	href="javascript.void()"
 	on:click={() => {
 		history.back();
 	}}
@@ -59,40 +88,69 @@
 		</li>
 	</ul>
 	<div class="flex flex-col gap-8">
-		<div class="flex flex-col">
-			<SettingsHeader title="Profile Picture" />
-			<div class="flex flex-row items-center gap-10">
-				<img
-					class="object-cover"
-					src={profileImageURL}
-					alt={data.username}
-					style="width: {imageSize}; height: {imageSize}; border-radius: 999999px"
-				/>
-				<span class="flex gap-5">
-					<button class="btn btn-primary"> Change Picture </button>
-					<button class="btn btn-error"> Delete Picture </button>
-				</span>
-			</div>
-		</div>
-		<div class="flex flex-col">
-			<SettingsHeader title="Username" />
-			<label class="input input-bordered flex items-center gap-2">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="22"
-					height="22"
-					viewBox="0 0 24 24"
-					{...$$props}
-				>
-					<path
-						fill="currentColor"
-						fill-rule="evenodd"
-						d="M10 4h4c3.771 0 5.657 0 6.828 1.172C22 6.343 22 8.229 22 12c0 3.771 0 5.657-1.172 6.828C19.657 20 17.771 20 14 20h-4c-3.771 0-5.657 0-6.828-1.172C2 17.657 2 15.771 2 12c0-3.771 0-5.657 1.172-6.828C4.343 4 6.229 4 10 4m3.25 5a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75m1 3a.75.75 0 0 1 .75-.75h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75m1 3a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5h-3a.75.75 0 0 1-.75-.75M11 9a2 2 0 1 1-4 0a2 2 0 0 1 4 0m-2 8c4 0 4-.895 4-2s-1.79-2-4-2s-4 .895-4 2s0 2 4 2"
-						clip-rule="evenodd"
+		<form
+			class="flex flex-col gap-8"
+			action="updateProfile"
+			on:input={getFormData}
+			bind:this={formData}
+		>
+			<div class="flex flex-col">
+				<SettingsHeader title="Profile Picture" />
+				<div class="flex flex-row items-center gap-10">
+					<img
+						class="object-cover"
+						src={profileImageURL}
+						alt={data.username}
+						style="width: {imageSize}; height: {imageSize}; border-radius: 999999px"
 					/>
-				</svg>
-				<input name="username_or_email" type="text" class="grow" placeholder="Username or Email" />
-			</label>
-		</div>
+					<span class="flex gap-5">
+						<input type="file" hidden bind:this={fileInput} bind:value={fileValue}/>
+						<button type="button" class="btn btn-primary" on:click={() => fileInput.click()}>
+							Change Picture
+						</button>
+						<button class="btn btn-error"> Delete Picture </button>
+					</span>
+				</div>
+			</div>
+			<div class="flex flex-col">
+				<SettingsHeader title="Username" />
+				<label class="input input-bordered flex items-center gap-2">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="currentColor"
+						class="w-4 h-4 opacity-70"
+						><path
+							d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z"
+						/></svg
+					>
+					<input
+						name="username"
+						type="text"
+						class="grow"
+						placeholder="Username"
+						value={data.username}
+					/>
+				</label>
+			</div>
+			<div class="flex flex-col">
+				<SettingsHeader title="Email" />
+				<label class="input input-bordered flex items-center gap-2">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="currentColor"
+						class="w-4 h-4 opacity-70"
+						><path
+							d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z"
+						/><path
+							d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z"
+						/></svg
+					>
+					<input name="email" type="text" class="grow" placeholder="email" value={data.email} />
+				</label>
+			</div>
+			<button class="btn btn-success self-start">Update Profile</button>
+		</form>
 	</div>
 </div>

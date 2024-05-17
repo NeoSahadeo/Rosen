@@ -3,7 +3,7 @@
 </script>
 
 <div class="navbar shadow-xl">
-	<div class="">
+	<div class="hover:cursor-pointer">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			width="50"

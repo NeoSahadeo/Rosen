@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CreatePostModal from './createPostModal.svelte';
 	import { urls } from '$lib/constants';
+	import { logoutFunction } from '$lib/api';
 	export let profileImageURL = '',
 		username = '';
 
@@ -87,6 +88,7 @@
 					<li><a href={dropdownOptions[dropdownOption]}>{dropdownOption}</a></li>
 				{/each}
 				<li></li>
+				<li><button on:click={logoutFunction}>Logout</button></li>
 			</ul>
 		</div>
 	</div>
