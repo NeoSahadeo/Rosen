@@ -2,6 +2,8 @@
 	import CreatePostModal from './createPostModal.svelte';
 	import { urls } from '$lib/constants';
 	import { logoutFunction } from '$lib/api';
+	import { previousPage } from '$lib/stores';
+	import { page } from '$app/stores';
 	export let profileImageURL = '',
 		username = '';
 
@@ -85,9 +87,10 @@
 					: 'hidden'} absolute right-0 mt-4 mr-4 dropdown-content menu p-2 shadow-lg rounded-box w-52 border-primary border-2"
 			>
 				{#each Object.keys(dropdownOptions) as dropdownOption}
-					<li><a href={dropdownOptions[dropdownOption]}>{dropdownOption}</a></li>
+					<li><a href={dropdownOptions[dropdownOption]} on:mouseover={()=>{
+						previousPage.set($page.path || null)
+					}}>{dropdownOption}</a></li>
 				{/each}
-				<li></li>
 				<li><button on:click={logoutFunction}>Logout</button></li>
 			</ul>
 		</div>

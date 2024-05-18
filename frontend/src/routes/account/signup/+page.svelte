@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Backheader from '$lib/components/ui/backheader.svelte';
+	import { previousPage } from '$lib/stores';
 </script>
 
-<a href="../">
+<a href={$previousPage? $previousPage: '/latest/'}>
 	<Backheader />
 </a>
 <div class="container max-w-sm sm:pl-10 sm:px-0 px-4">

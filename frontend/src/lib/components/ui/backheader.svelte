@@ -21,5 +21,5 @@
 			/>
 		</svg>
 	</div>
-	<h1 class="text-3xl font-bold ml-3">{title}</h1>
+	<h1 class="md:text-3xl text-2xl font-bold ml-3">{title}</h1>
 </div>

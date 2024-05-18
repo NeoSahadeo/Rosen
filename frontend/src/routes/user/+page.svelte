@@ -2,12 +2,16 @@
 	import Backheader from '$lib/components/ui/backheader.svelte';
 	import { urls } from '$lib/constants.js';
 	import SettingsHeader from './settingsHeader.svelte';
+	import { previousPage } from '$lib/stores';
 	import { baseServer } from '$lib/constants.js';
 	import { logoutFunction } from '$lib/api';
 	import TopLevelNotification from '$lib/components/ui/topLevelNotification.svelte';
 	import { onMount } from 'svelte';
+	import { enhance, applyAction } from '$app/forms';
+	import toast from 'svelte-french-toast';
+	import { goto, invalidateAll } from '$app/navigation';
 	export let data;
-	const profileImageURL = baseServer + data.image;
+	let profileImageURL = baseServer + data.image;
 	const imageSize = '6rem';
 
 	let fileInput: HTMLInputElement;
@@ -15,39 +19,40 @@
 
 	let formData: HTMLFormElement;
 	let originalForm: FormData;
-	onMount(()=>{
+	onMount(() => {
 		originalForm = new FormData(formData);
-	})
+	});
 
 	let formObject;
 	let changes = 0;
 	function getFormData() {
 		changes = 0;
 		formObject = new FormData(formData);
-		compareContent(originalForm, formObject)
+		compareContent(originalForm, formObject);
 	}
 
 	function compareContent(source: FormData, input: FormData) {
+		const image = input.get('image');
+		if (image) {
+			//@ts-ignore
+			profileImageURL = URL.createObjectURL(image);
+		}
 		source.forEach((value, key) => {
-			if (!(input.get(key) == value)){
+			if (!(input.get(key) == value)) {
 				changes++;
 			}
-		})
+		});
 	}
 </script>
 
 {#if changes > 0 || fileValue !== undefined}
-<TopLevelNotification warning="Make Sure to Save Changes" />
+	<TopLevelNotification warning="Make Sure to Save Changes" />
 {/if}
-<a
-	on:click={() => {
-		history.back();
-	}}
->
+<a href={$previousPage ? $previousPage : '/latest/'}>
 	<Backheader title="Settings" />
 </a>
 <div class="w-full h-full flex flex-row pl-4 pt-4 gap-8">
-	<ul class="menu bg-base-200 w-56 rounded-box h-min">
+	<ul class="menu bg-base-200 w-56 rounded-box h-min md:block hidden">
 		<li>
 			<a href={urls.userSettings}>
 				<svg
@@ -90,9 +95,23 @@
 	<div class="flex flex-col gap-8">
 		<form
 			class="flex flex-col gap-8"
-			action="updateProfile"
+			method="post"
+			action="?/updateProfile"
 			on:input={getFormData}
 			bind:this={formData}
+			enctype="multipart/form-data"
+			use:enhance={({}) => {
+				return async ({ result }) => {
+					if (result.type === 'success') {
+						toast.success('Profile Updated');
+						changes = 0;
+						fileValue = undefined;
+						invalidateAll();
+					} else {
+						toast.error('An Error Occured');
+					}
+				};
+			}}
 		>
 			<div class="flex flex-col">
 				<SettingsHeader title="Profile Picture" />
@@ -104,7 +123,7 @@
 						style="width: {imageSize}; height: {imageSize}; border-radius: 999999px"
 					/>
 					<span class="flex gap-5">
-						<input type="file" hidden bind:this={fileInput} bind:value={fileValue}/>
+						<input name="image" type="file" hidden bind:this={fileInput} bind:value={fileValue} />
 						<button type="button" class="btn btn-primary" on:click={() => fileInput.click()}>
 							Change Picture
 						</button>
@@ -150,7 +169,16 @@
 					<input name="email" type="text" class="grow" placeholder="email" value={data.email} />
 				</label>
 			</div>
-			<button class="btn btn-success self-start">Update Profile</button>
+
+			{#if changes > 0 || fileValue !== undefined}
+				<button
+					class="btn btn-warning self-start shadow-lg"
+					style="-webkit-box-shadow:0px 0px 27px 0px rgba(217,255,46,0.51); -moz-box-shadow: 0px 0px 27px 0px rgba(217,255,46,0.51); box-shadow: 0px 0px 27px 0px rgba(217,255,46,0.51);"
+					>Update Profile</button
+				>
+			{:else}
+				<button class="btn btn-warning self-start shadow-lg" disabled>Update Profile</button>
+			{/if}
 		</form>
 	</div>
 </div>

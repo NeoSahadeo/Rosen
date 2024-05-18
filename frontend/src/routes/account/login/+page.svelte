@@ -4,9 +4,10 @@
 	import Backheader from '$lib/components/ui/backheader.svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { redirect } from '@sveltejs/kit';
+	import { previousPage } from '$lib/stores';
 </script>
 
-<a href="../">
+<a href={$previousPage? $previousPage: '/latest/'}>
 	<Backheader title="Log In" />
 </a>
 <div class="container max-w-sm sm:pl-10 sm:px-0 px-4">

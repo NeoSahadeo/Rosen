@@ -11,6 +11,7 @@ const baseServer = 'http://127.0.0.1:8000'
 const urls = {
 	validateSession: baseServer + '/validatesession/',
 	fetchProfile: baseServer + '/fetchprofile/',
+	updateProfile: baseServer + '/patch/',
 
 	userSettings: localServer + '/user/',
 }
